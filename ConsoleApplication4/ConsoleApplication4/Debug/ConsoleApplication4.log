@@ -1,3 +1,4 @@
-﻿  stdafx.cpp
-  ConsoleApplication4.cpp
-  ConsoleApplication4.vcxproj -> C:\Users\João Renato\Source\Repos\ConsoleApplication4\Debug\ConsoleApplication4.exe
+﻿  ConsoleApplication4.cpp
+c:\users\___\documents\projetoprogmmxvii-i\consoleapplication4\consoleapplication4\consoleapplication4.cpp(25): warning C4018: '<': signed/unsigned mismatch
+c:\users\___\documents\projetoprogmmxvii-i\consoleapplication4\consoleapplication4\consoleapplication4.cpp(37): warning C4018: '<': signed/unsigned mismatch
+  ConsoleApplication4.vcxproj -> C:\Users\___\Documents\ProjetoProgMMXVII-I\ConsoleApplication4\Debug\ConsoleApplication4.exe
