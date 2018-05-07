@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map> //<-------------------------------
+#include <algorithm>
 
 using namespace std;
 
@@ -62,6 +63,7 @@ public:
 	void extraction()
 	{
 		string completeLine;
+		string word;
 		//int i = -1;
 
 		f.open(fileNameInput);
@@ -88,10 +90,14 @@ public:
 					//wordSynonyms.push_back(newEmptyVector);
 					//wordSynonyms[i].push_back(singleWord(completeLine));
 					headline = singleWord(completeLine);
+					transform(headline.begin(), headline.end(), headline.begin(), ::toupper);
 				}
-				else
+				else {
 					//wordSynonyms[i].push_back(singleWord(completeLine)); 
-					synonyms.push_back(singleWord(completeLine));
+					word = singleWord(completeLine);
+					transform(word.begin(), word.end(), word.begin(), ::toupper);
+					synonyms.push_back(word);
+				}
 			}
 
 			wordSynonyms[headline] = synonyms;
@@ -118,6 +124,23 @@ private:
 	unsigned int lines, columns;
 	vector <vector <char> > layout;
 	vector <char> newEmpty;
+	vector <string> wordsPlaced;
+
+	void addVertical(string word, int line, int column)
+	{
+		layout[column].at(line - 1) = '#';
+		for (unsigned int i = 0; i < word.size(); i++)
+			layout[column][line + i] = word[i];
+		layout[column].at(line + word.size()) = '#';
+	}
+
+	void addHorizontal(string word, int line, int column)
+	{
+		layout.at(column - 1)[line] = '#';
+		for (unsigned int i = 0; i < word.size(); i++)
+			layout[column + 1][line] = word[i];
+		layout.at(column + word.size())[line] = '#';
+	}
 
 public:
 	/*
@@ -132,7 +155,7 @@ public:
 		columns = 10; //default size
 	}//constructor
 
-	Board(int lines, int columns) 
+	Board(unsigned int lines, unsigned int columns) 
 	{
 		this->lines = lines; 
 		this->columns = columns;
@@ -154,7 +177,17 @@ public:
 	}
 
 	void show() {
+		char a = 'a';
+		char A = 'A';
+		cout << "  ";
+		for (int i = 0; i < columns; i++) {
+			char b = a + i;
+			cout << " " << b;
+		}
+		cout << endl;
 		for (unsigned int j = 0; j < lines; j++) {
+			char B = A + j;
+			cout << " " << B;
 			for (unsigned int i = 0; i < columns; i++) {
 				cout << " " << layout[i][j];
 			}
@@ -162,55 +195,130 @@ public:
 		}
 	}
 
-	void addWord(...) {
 
-	}
-
-	void removeWord(...) {
-
-	}
-
-	bool clearSpace4Word(int wSize, int lineNum, int columnNum, char direction)
+	int whichLine(string position)
 	{
+		//first char of position
+		char l = position[0];
+		//char - A = position on vector (A-A=0, 1st line, position 0 on the vector)
+		int lineNum = l - 65;
+		return lineNum;
+	}
+
+	int whichColumn(string position)
+	{
+		//second char of position
+		char c = position[1];
+		//char - a = position on vector
+		int columnNum = c - 97;
+		return columnNum;
+	}
+
+
+	void addWord(string word, string position) {
+		int lineNum = whichLine(position);
+		int columnNum = whichColumn(position);
+		char direction = position[2];
+
+		if ('V' == direction || 'v' == direction) addVertical(word, lineNum, columnNum);
+		if ('H' == direction || 'v' == direction) addHorizontal(word, lineNum, columnNum);
+
+		wordsPlaced.push_back(word);
+	}
+
+	void removeWord(string position) {
+
+	}
+
+/*	bool clearSpace4Word(int wSize, int lineNum, int columnNum, char direction)
+	{
+		//check if the beginning is out of boundaries or not
+		if (lineNum + 1 > lines || columnNum + 1 > columns) return false;
+		//checks if there are space for the word, depending on the initial position, and the word size
+		//checks several conditions
 		if ('V' == direction || 'v' == direction) {
-			if (0 == lineNum) {
-				for (unsigned int i = 0; i < wSize )
+			if (0 == lineNum) {  //beginning of the column
+				for (unsigned int i = 0; i < wSize; i++) //checks every position
+					if (layout[columnNum][i] != '.') return false;
+				if (!(layout[columnNum].at(wSize) == '#' || layout[columnNum].at(wSize) == '.')) return false; // checks the final position +1
 			}
 			else {
-
+				if (lineNum + wSize > lines) return false;
+				for (unsigned int i = 0; i < wSize; i++) //all position checking
+					if (layout[columnNum][i + lineNum] != '.') return false;
+				if (!(layout[columnNum].at(wSize + lineNum) == '#' || layout[columnNum].at(wSize + lineNum) == '.')) return false; //empty space in the end
+				if (!(layout[columnNum].at(lineNum - 1) == '#' || layout[columnNum].at(lineNum - 1) == '.')) return false; //empty space in the beginning
 			}
 		}
 		else if ('H' == direction || 'h' == direction)
 		{
 			if (0 == columnNum)
 			{
-
+				for (unsigned int i = 0; i < wSize; i++)
+					if (layout[i][lineNum] != '.') return false; //all positions
+				if (!(layout.at(wSize)[lineNum] == '#' || layout.at(wSize)[lineNum] == '.')) return false; // checks the final position +1
 			}
 			else {
-
+				if (columnNum + wSize > columns) return false;
+				for (unsigned int i = 0; i < wSize; i++) //all position checking
+					if (layout[i+columnNum][lineNum] != '.') return false;
+				if (!(layout.at(wSize + columnNum)[lineNum] == '#' || layout.at(wSize + columnNum)[lineNum] == '.')) return false; //empty space in the end
+				if (!(layout.at(columnNum - 1)[lineNum] == '#' || layout.at(columnNum - 1)[lineNum] == '.')) return false; //empty space in the beginning
 			}
 		}
 	}
+	*/
 
+	bool checkSpace4Word(string word, int lineNum, int columnNum, char direction)
+	{
+		int wSize = word.size();
+
+		//check if the beginning is out of boundaries or not
+		if (lineNum + 1 > lines || columnNum + 1 > columns) return false;
+		//checks if there are space for the word, depending on the initial position, and the word size
+		//checks several conditions
+		if ('V' == direction || 'v' == direction) {
+			if (0 == lineNum) {  //beginning of the column
+				for (unsigned int i = 0; i < wSize; i++) //checks every position
+					if (!(layout[columnNum][i] == '.' || layout[columnNum][i] == word[i])) return false;
+			//	if (!(layout[columnNum].at(wSize) == '#' || layout[columnNum].at(wSize) == '.')) return false; // checks the final position +1
+			}
+			else {
+				if (lineNum + wSize > lines) return false;
+				for (unsigned int i = 0; i < wSize; i++) //all position checking
+					if (!(layout[columnNum][i + lineNum] == '.' || layout[columnNum][i + lineNum] == word[i])) return false;
+			//	if (!(layout[columnNum].at(wSize + lineNum) == '#' || layout[columnNum].at(wSize + lineNum) == '.')) return false; //empty space in the end
+			//	if (!(layout[columnNum].at(lineNum - 1) == '#' || layout[columnNum].at(lineNum - 1) == '.')) return false; //empty space in the beginning
+			}
+		}
+		else if ('H' == direction || 'h' == direction)
+		{
+			if (0 == columnNum)
+			{
+				for (unsigned int i = 0; i < wSize; i++)
+					if (!(layout[i][lineNum] == '.' || layout[i][lineNum] == word[i])) return false; //all positions
+			//	if (!(layout.at(wSize)[lineNum] == '#' || layout.at(wSize)[lineNum] == '.')) return false; // checks the final position +1
+			}
+			else {
+				if (columnNum + wSize > columns) return false;
+				for (unsigned int i = 0; i < wSize; i++) //all position checking
+					if (!(layout[i + columnNum][lineNum] == '.' || layout[i + columnNum][lineNum] == word[i])) return false;
+			//	if (!(layout.at(wSize + columnNum)[lineNum] == '#' || layout.at(wSize + columnNum)[lineNum] == '.')) return false; //empty space in the end
+			//	if (!(layout.at(columnNum - 1)[lineNum] == '#' || layout.at(columnNum - 1)[lineNum] == '.')) return false; //empty space in the beginning
+			}
+		}
+		return true;
+	}
+
+	bool unusedWord(string word)
+	{
+		for (unsigned int i = 0; i < wordsPlaced.size(); i++)
+			if (word == wordsPlaced[i]) return false;
+		return true;
+	}
 };
 
-int whichLine(string position)
-{
-	//first char of position
-	char l = position[0];
-	//char - A = position on vector (A-A=0, 1st line, position 0 on the vector)
-	int lineNum = l - 65;
-	return lineNum;
-}
 
-int whichColumn(string position)
-{
-	//second char of position
-	char c = position[1];
-	//char - a = position on vector
-	int columnNum = c - 97;
-	return columnNum;
-}
  
 bool checkValidity(Dict *dictP, Board *boardP, string word, string position) 
 {
@@ -218,12 +326,13 @@ bool checkValidity(Dict *dictP, Board *boardP, string word, string position)
 	if (!dictP->headlineExists(word)) return false;
 	
 	//process the position string into line number, column number and direction
-	int lineNum = whichLine(position);
-	int columnNum = whichColumn(position);
+	int lineNum = boardP->whichLine(position);
+	int columnNum = boardP->whichColumn(position);
 	char direction = position[2];
 
-	if (!boardP->clearSpace4Word(word.size(), lineNum, columnNum, direction)) return false;
-
+//	if (!boardP->clearSpace4Word(word.size(), lineNum, columnNum, direction)) return false;
+	if (!boardP->unusedWord(word)) return false;
+	if (!boardP->checkSpace4Word(word, lineNum, columnNum, direction)) return false;
 	return true;
 }
 
@@ -255,15 +364,16 @@ void puzzleCreate()
 		if (cin.eof()) { cin.clear(); break; } //CTRL-Z to get out of the loop
 
 		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
+		transform(word.begin(), word.end(), word.begin(), ::toupper);
 		//to remove a word
 		if ("-" == word) {
-			//TO BE COMPLETED <=========================================================================================
+			board.removeWord(position);
 		}
 		else if ("?" == word) {
 			//TO BE COMPLETED <=========================================================================================
 		}
 
-		else checkValidity(dictA, boardA, word, position);
+		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
 
 
 
@@ -271,7 +381,11 @@ void puzzleCreate()
 	cout << "\n\n\nYOU GOT OUT!\n\n\n";
 																									//to here
 }																		
+/*
+void wordsTest()
+{
 
+} */
 
 int main()
 {
@@ -305,6 +419,10 @@ int main()
 			if ("0" == chosenOption) return 0;
 			if ("1" == chosenOption) {
 				puzzleCreate(); 
+				break;
+			}
+			if ("2" == chosenOption) {
+				//wordsTest();
 				break;
 			}
 			//if ("2" == chosenOption) { puzzleResume(); break; }
