@@ -111,10 +111,10 @@ public:
 		f.close();
 	}
 
-	bool headlineExists(string word)
+	bool headlineExists(string word) //<=================================0
 	{
 		return true;
-	}
+	}     //<====================================================
 
 };
 
@@ -128,18 +128,58 @@ private:
 
 	void addVertical(string word, int line, int column)
 	{
-		layout[column].at(line - 1) = '#';
+		if (0 < line) layout[column].at(line - 1) = '#';
 		for (unsigned int i = 0; i < word.size(); i++)
 			layout[column][line + i] = word[i];
-		layout[column].at(line + word.size()) = '#';
+		if (line + word.size() < lines) layout[column].at(line + word.size()) = '#';
 	}
 
 	void addHorizontal(string word, int line, int column)
 	{
-		layout.at(column - 1)[line] = '#';
+		if (0 < column) layout.at(column - 1)[line] = '#';
 		for (unsigned int i = 0; i < word.size(); i++)
-			layout[column + 1][line] = word[i];
-		layout.at(column + word.size())[line] = '#';
+			layout[column + i][line] = word[i];
+		if (column + word.size() < columns) layout.at(column + word.size())[line] = '#';
+	}
+
+	void removeVertical(int line, int column)
+	{
+		if (0 < line) layout[column].at(line - 1) = '.';
+		int i = 0;
+		while (true)
+		{
+			if (line + i == lines) return;
+			if (layout[column][line + i] == '#')
+			{
+				layout[column][line + i] = '.';
+				return;
+			}
+			layout[column][line + i] = '.';
+			i++;
+		}
+	//	for (unsigned int i = 0; i < word.size(); i++)
+	//		layout[column][line + i] = '.';
+	//	if (line + word.size() < lines) layout[column].at(line + word.size()) = '.';
+	}
+
+	void removeHorizontal(int line, int column)
+	{
+		if (0 < column) layout.at(column - 1)[line] = '.';
+		int i = 0;
+		while (true)
+		{
+			if (column + i == lines) return;
+			if (layout[column + i][line] == '#')
+			{
+				layout[column + i][line] = '.';
+				return;
+			}
+			layout[column][line + i] = '.';
+			i++;
+		}
+	//	for (unsigned int i = 0; i < word.size(); i++)
+	//		layout[column + i][line] = '.';
+	//	if (column + word.size() < columns) layout.at(column + word.size())[line] = '.';
 	}
 
 public:
@@ -195,7 +235,6 @@ public:
 		}
 	}
 
-
 	int whichLine(string position)
 	{
 		//first char of position
@@ -214,7 +253,6 @@ public:
 		return columnNum;
 	}
 
-
 	void addWord(string word, string position) {
 		int lineNum = whichLine(position);
 		int columnNum = whichColumn(position);
@@ -227,7 +265,12 @@ public:
 	}
 
 	void removeWord(string position) {
+		int line = whichLine(position);
+		int column = whichColumn(position);
+		char direction = position[2];
 
+		if ('V' == direction || 'v' == direction) removeVertical(line, column);
+		if ('H' == direction || 'h' == direction) removeHorizontal(line, column);
 	}
 
 /*	bool clearSpace4Word(int wSize, int lineNum, int columnNum, char direction)
@@ -281,14 +324,16 @@ public:
 			if (0 == lineNum) {  //beginning of the column
 				for (unsigned int i = 0; i < wSize; i++) //checks every position
 					if (!(layout[columnNum][i] == '.' || layout[columnNum][i] == word[i])) return false;
-			//	if (!(layout[columnNum].at(wSize) == '#' || layout[columnNum].at(wSize) == '.')) return false; // checks the final position +1
+				if (lineNum + wSize < lines)
+					if (!(layout[columnNum].at(wSize) == '#' || layout[columnNum].at(wSize) == '.')) return false; // checks the final position +1
 			}
 			else {
 				if (lineNum + wSize > lines) return false;
 				for (unsigned int i = 0; i < wSize; i++) //all position checking
 					if (!(layout[columnNum][i + lineNum] == '.' || layout[columnNum][i + lineNum] == word[i])) return false;
-			//	if (!(layout[columnNum].at(wSize + lineNum) == '#' || layout[columnNum].at(wSize + lineNum) == '.')) return false; //empty space in the end
-			//	if (!(layout[columnNum].at(lineNum - 1) == '#' || layout[columnNum].at(lineNum - 1) == '.')) return false; //empty space in the beginning
+				if (lineNum + wSize < lines) 
+					if (!(layout[columnNum].at(wSize + lineNum) == '#' || layout[columnNum].at(wSize + lineNum) == '.')) return false; //empty space in the end
+				if (!(layout[columnNum].at(lineNum - 1) == '#' || layout[columnNum].at(lineNum - 1) == '.')) return false; //empty space in the beginning
 			}
 		}
 		else if ('H' == direction || 'h' == direction)
@@ -297,14 +342,16 @@ public:
 			{
 				for (unsigned int i = 0; i < wSize; i++)
 					if (!(layout[i][lineNum] == '.' || layout[i][lineNum] == word[i])) return false; //all positions
-			//	if (!(layout.at(wSize)[lineNum] == '#' || layout.at(wSize)[lineNum] == '.')) return false; // checks the final position +1
+				if (columnNum + wSize < columns) 
+					if (!(layout.at(wSize)[lineNum] == '#' || layout.at(wSize)[lineNum] == '.')) return false; // checks the final position +1
 			}
 			else {
 				if (columnNum + wSize > columns) return false;
 				for (unsigned int i = 0; i < wSize; i++) //all position checking
 					if (!(layout[i + columnNum][lineNum] == '.' || layout[i + columnNum][lineNum] == word[i])) return false;
-			//	if (!(layout.at(wSize + columnNum)[lineNum] == '#' || layout.at(wSize + columnNum)[lineNum] == '.')) return false; //empty space in the end
-			//	if (!(layout.at(columnNum - 1)[lineNum] == '#' || layout.at(columnNum - 1)[lineNum] == '.')) return false; //empty space in the beginning
+				if (columnNum + wSize < columns) 
+					if (!(layout.at(wSize + columnNum)[lineNum] == '#' || layout.at(wSize + columnNum)[lineNum] == '.')) return false; //empty space in the end
+				if (!(layout.at(columnNum - 1)[lineNum] == '#' || layout.at(columnNum - 1)[lineNum] == '.')) return false; //empty space in the beginning
 			}
 		}
 		return true;
