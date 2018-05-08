@@ -111,10 +111,19 @@ public:
 		f.close();
 	}
 
-	bool headlineExists(string word) //<=================================0
+	bool headlineExists(string word) 
 	{
-		return true;
-	}     //<====================================================
+		map<string, vector<string>>::iterator it = wordSynonyms.begin();
+
+		for (it = wordSynonyms.begin(); it != wordSynonyms.end(); it++) {
+			if ((*it).first == word) {
+				return true;
+				break;
+			}
+		}
+
+		return false;
+	}
 
 };
 
