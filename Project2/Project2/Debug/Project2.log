@@ -1,14 +1,2 @@
 ﻿  cwcreator.cpp
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(223): warning C4018: '<': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(320): warning C4018: '>': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(325): warning C4018: '<': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(327): warning C4018: '<': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(331): warning C4018: '>': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(332): warning C4018: '<': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(334): warning C4018: '<': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(343): warning C4018: '<': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(345): warning C4018: '<': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(349): warning C4018: '>': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(350): warning C4018: '<': signed/unsigned mismatch
-c:\users\beto\documents\projeto2\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(352): warning C4018: '<': signed/unsigned mismatch
-  Project2.vcxproj -> C:\Users\Beto\Documents\Projeto2\ProjetoProgMMXVII-I\Project2\Debug\Project2.exe
+  Project2.vcxproj -> C:\Users\henri\OneDrive\Documentos\PROG\PROG-PROJ2\Project2\Debug\Project2.exe

@@ -23,24 +23,27 @@ private:
 		int doisPontos, virgula;
 		doisPontos = line.find(":");
 		virgula = line.find(",");
-
-		if (doisPontos < virgula) return true;
+		if (doisPontos == -1) return false;
+		else if (doisPontos < virgula) return true;
 		else return false;
 	}
 
-	string singleWord(string& Line) //retirar a proxima palavra da linha
+	string singleWord(string &Line) //retirar a proxima palavra da linha
 	{
+		string delimiter = ":, "; //delimitadores
+		 //place where the delimiter will be
 		//check if the first char is a letter
 		//and if not cut the chars till we reach a letter, and then, a word
 		while (!((Line[0] >= 65 && Line[0] <= 90) || (Line[0] >= 97 && Line[0] <= 122))) {
 			Line.erase(0, 1);
+			//cout << ".\n";
 		}
-
-		string delimiter = " ,:"; //delimitadores
-		string singleWord = Line.substr(0, Line.find(delimiter)); //palavra individual
+		int found = Line.find_first_of(delimiter), lineSize = Line.size();
+		//individual word
+		string singleWord = Line.substr(0, found); 
 		//erase the given words
-		Line.erase(0, Line.find(delimiter));
-
+		if (found < lineSize) Line.erase(0, found + 1);
+		else Line.erase(0, found);
 		
 		return singleWord;
 	}
@@ -64,6 +67,8 @@ public:
 	{
 		string completeLine;
 		string word;
+		string headline;
+		
 		//int i = -1;
 
 		f.open(fileNameInput);
@@ -82,7 +87,6 @@ public:
 
 		//line and headline analysis
 		while (!f.eof()) {
-			string headline;
 			vector <string> synonyms;
 			while (completeLine != "\0") {
 				if (isHeadline(completeLine)) {
@@ -99,7 +103,9 @@ public:
 					synonyms.push_back(word);
 				}
 			}
-
+			cout << endl << headline  << "  -  ";
+			for (unsigned int i = 0; i < synonyms.size(); i++)
+				cout << synonyms[i] << " ";
 			wordSynonyms[headline] = synonyms;
 
 			//next line
@@ -113,15 +119,15 @@ public:
 
 	bool headlineExists(string word) 
 	{
+		string errorMessage = "\nThe word doesn't belong to the dictionary!\n\n";
 		map<string, vector<string>>::iterator it = wordSynonyms.begin();
 
 		for (it = wordSynonyms.begin(); it != wordSynonyms.end(); it++) {
 			if ((*it).first == word) {
 				return true;
-				break;
 			}
 		}
-
+		cout << errorMessage;
 		return false;
 	}
 
@@ -192,12 +198,6 @@ private:
 	}
 
 public:
-	/*
-	FAZER LINHAS E COLUNAS +1, PARA QUE OS IDENTIFICADORES DAS LINHAS ESTEJAM DENTRO DO VECTOR?
-	OU NOS LOOP QUE FIZERMOS, CONTANDO DO INICIO E NA PRIMEIRA LINHA, METER OS EIXOS "A PARTE" DO VECTOR E DO LOOP DO VECTOR?
-	*/
-
-	// from here
 	Board()      
 	{
 		lines = 10;  //default size
@@ -209,7 +209,6 @@ public:
 		this->lines = lines; 
 		this->columns = columns;
 	}	//constructor with arguments					
-	// to here
 
 	void pointFill()
 	{
@@ -229,7 +228,7 @@ public:
 		char a = 'a';
 		char A = 'A';
 		cout << "  ";
-		for (int i = 0; i < columns; i++) {
+		for (unsigned int i = 0; i < columns; i++) {
 			char b = a + i;
 			cout << " " << b;
 		}
@@ -321,28 +320,41 @@ public:
 	}
 	*/
 
-	bool checkSpace4Word(string word, int lineNum, int columnNum, char direction)
+	bool checkSpace4Word(string word, unsigned int lineNum, unsigned int columnNum, char direction)
 	{
-		int wSize = word.size();
+		unsigned int wSize = word.size();
+		string errorMessage = "\nThe word you are trying to insert, doesn't fit in the board!\n\n";
 
 		//check if the beginning is out of boundaries or not
-		if (lineNum + 1 > lines || columnNum + 1 > columns) return false;
+		if (lineNum + 1 > lines || columnNum + 1 > columns) { cout << errorMessage; return false;  }
 		//checks if there are space for the word, depending on the initial position, and the word size
 		//checks several conditions
 		if ('V' == direction || 'v' == direction) {
 			if (0 == lineNum) {  //beginning of the column
 				for (unsigned int i = 0; i < wSize; i++) //checks every position
-					if (!(layout[columnNum][i] == '.' || layout[columnNum][i] == word[i])) return false;
+					if (!(layout[columnNum][i] == '.' || layout[columnNum][i] == word[i])) {
+						cout << errorMessage;  return false;
+					}
 				if (lineNum + wSize < lines)
-					if (!(layout[columnNum].at(wSize) == '#' || layout[columnNum].at(wSize) == '.')) return false; // checks the final position +1
+					if (!(layout[columnNum].at(wSize) == '#' || layout[columnNum].at(wSize) == '.')) { // checks the final position +1
+						cout << errorMessage; return false; 
+					}
 			}
 			else {
-				if (lineNum + wSize > lines) return false;
+				if (lineNum + wSize > lines) {
+					cout << errorMessage; return false;
+				}
 				for (unsigned int i = 0; i < wSize; i++) //all position checking
-					if (!(layout[columnNum][i + lineNum] == '.' || layout[columnNum][i + lineNum] == word[i])) return false;
+					if (!(layout[columnNum][i + lineNum] == '.' || layout[columnNum][i + lineNum] == word[i])) {
+						cout << errorMessage; return false;
+					}
 				if (lineNum + wSize < lines) 
-					if (!(layout[columnNum].at(wSize + lineNum) == '#' || layout[columnNum].at(wSize + lineNum) == '.')) return false; //empty space in the end
-				if (!(layout[columnNum].at(lineNum - 1) == '#' || layout[columnNum].at(lineNum - 1) == '.')) return false; //empty space in the beginning
+					if (!(layout[columnNum].at(wSize + lineNum) == '#' || layout[columnNum].at(wSize + lineNum) == '.')) { //empty space in the end
+						cout << errorMessage; return false;
+					} 
+				if (!(layout[columnNum].at(lineNum - 1) == '#' || layout[columnNum].at(lineNum - 1) == '.')) { //empty space in the beginning
+					cout << errorMessage; return false;
+				}
 			}
 		}
 		else if ('H' == direction || 'h' == direction)
@@ -350,17 +362,29 @@ public:
 			if (0 == columnNum)
 			{
 				for (unsigned int i = 0; i < wSize; i++)
-					if (!(layout[i][lineNum] == '.' || layout[i][lineNum] == word[i])) return false; //all positions
+					if (!(layout[i][lineNum] == '.' || layout[i][lineNum] == word[i])) { //all positions
+						cout << errorMessage; return false;
+					}
 				if (columnNum + wSize < columns) 
-					if (!(layout.at(wSize)[lineNum] == '#' || layout.at(wSize)[lineNum] == '.')) return false; // checks the final position +1
+					if (!(layout.at(wSize)[lineNum] == '#' || layout.at(wSize)[lineNum] == '.')) { // checks the final position +1
+						cout << errorMessage; return false;
+					}
 			}
 			else {
-				if (columnNum + wSize > columns) return false;
+				if (columnNum + wSize > columns) {
+					cout << errorMessage; return false;
+				}
 				for (unsigned int i = 0; i < wSize; i++) //all position checking
-					if (!(layout[i + columnNum][lineNum] == '.' || layout[i + columnNum][lineNum] == word[i])) return false;
+					if (!(layout[i + columnNum][lineNum] == '.' || layout[i + columnNum][lineNum] == word[i])) {
+						cout << errorMessage; return false;
+					}
 				if (columnNum + wSize < columns) 
-					if (!(layout.at(wSize + columnNum)[lineNum] == '#' || layout.at(wSize + columnNum)[lineNum] == '.')) return false; //empty space in the end
-				if (!(layout.at(columnNum - 1)[lineNum] == '#' || layout.at(columnNum - 1)[lineNum] == '.')) return false; //empty space in the beginning
+					if (!(layout.at(wSize + columnNum)[lineNum] == '#' || layout.at(wSize + columnNum)[lineNum] == '.')) {  //empty space in the end
+						cout << errorMessage; return false;
+					}
+				if (!(layout.at(columnNum - 1)[lineNum] == '#' || layout.at(columnNum - 1)[lineNum] == '.')) { //empty space in the beginning
+					cout << errorMessage; return false;
+				}
 			}
 		}
 		return true;
@@ -368,8 +392,13 @@ public:
 
 	bool unusedWord(string word)
 	{
+		string errorMessage = "\nThe word was already used!\n\n";
 		for (unsigned int i = 0; i < wordsPlaced.size(); i++)
-			if (word == wordsPlaced[i]) return false;
+			if (word == wordsPlaced[i])
+			{
+				cout << errorMessage;
+				return false;
+			}
 		return true;
 	}
 };
