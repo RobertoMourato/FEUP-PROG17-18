@@ -31,7 +31,7 @@ private:
 	string singleWord(string &Line) //retirar a proxima palavra da linha
 	{
 		string delimiter = ":, "; //delimitadores
-		 //place where the delimiter will be
+		//place where the delimiter will be
 		//check if the first char is a letter
 		//and if not cut the chars till we reach a letter, and then, a word
 		while (!((Line[0] >= 65 && Line[0] <= 90) || (Line[0] >= 97 && Line[0] <= 122))) {
@@ -79,7 +79,7 @@ public:
 		}
 
 		cout << "extrating the words and synonyms...\n";
-
+																			//do while aqui
 		//first line, except lines with "[ (...) ]"
 		do {
 			getline(f, completeLine);
@@ -94,19 +94,20 @@ public:
 					//wordSynonyms.push_back(newEmptyVector);
 					//wordSynonyms[i].push_back(singleWord(completeLine));
 					headline = singleWord(completeLine);
-					transform(headline.begin(), headline.end(), headline.begin(), ::toupper);
+					transform(headline.begin(), headline.end(), headline.begin(), ::toupper); //->uppercase
 				}
 				else {
 					//wordSynonyms[i].push_back(singleWord(completeLine)); 
 					word = singleWord(completeLine);
-					transform(word.begin(), word.end(), word.begin(), ::toupper);
+					transform(word.begin(), word.end(), word.begin(), ::toupper); //->uppercase
 					synonyms.push_back(word);
 				}
 			}
-			cout << endl << headline  << "  -  ";
-			for (unsigned int i = 0; i < synonyms.size(); i++)
-				cout << synonyms[i] << " ";
-			wordSynonyms[headline] = synonyms;
+
+		//	cout << endl << headline  << "  -  ";
+		//	for (unsigned int i = 0; i < synonyms.size(); i++)
+		//		cout << synonyms[i] << " ";
+		//	wordSynonyms[headline] = synonyms;
 
 			//next line
 			do {
@@ -137,7 +138,7 @@ public:
 class Board {
 private:
 	unsigned int lines, columns;
-	vector <vector <char> > layout;
+	vector <vector <char> > layout; //bigger vector "lines", smaller vectors are columns
 	vector <char> newEmpty;
 	vector <string> wordsPlaced;
 
@@ -281,45 +282,6 @@ public:
 		if ('H' == direction || 'h' == direction) removeHorizontal(line, column);
 	}
 
-/*	bool clearSpace4Word(int wSize, int lineNum, int columnNum, char direction)
-	{
-		//check if the beginning is out of boundaries or not
-		if (lineNum + 1 > lines || columnNum + 1 > columns) return false;
-		//checks if there are space for the word, depending on the initial position, and the word size
-		//checks several conditions
-		if ('V' == direction || 'v' == direction) {
-			if (0 == lineNum) {  //beginning of the column
-				for (unsigned int i = 0; i < wSize; i++) //checks every position
-					if (layout[columnNum][i] != '.') return false;
-				if (!(layout[columnNum].at(wSize) == '#' || layout[columnNum].at(wSize) == '.')) return false; // checks the final position +1
-			}
-			else {
-				if (lineNum + wSize > lines) return false;
-				for (unsigned int i = 0; i < wSize; i++) //all position checking
-					if (layout[columnNum][i + lineNum] != '.') return false;
-				if (!(layout[columnNum].at(wSize + lineNum) == '#' || layout[columnNum].at(wSize + lineNum) == '.')) return false; //empty space in the end
-				if (!(layout[columnNum].at(lineNum - 1) == '#' || layout[columnNum].at(lineNum - 1) == '.')) return false; //empty space in the beginning
-			}
-		}
-		else if ('H' == direction || 'h' == direction)
-		{
-			if (0 == columnNum)
-			{
-				for (unsigned int i = 0; i < wSize; i++)
-					if (layout[i][lineNum] != '.') return false; //all positions
-				if (!(layout.at(wSize)[lineNum] == '#' || layout.at(wSize)[lineNum] == '.')) return false; // checks the final position +1
-			}
-			else {
-				if (columnNum + wSize > columns) return false;
-				for (unsigned int i = 0; i < wSize; i++) //all position checking
-					if (layout[i+columnNum][lineNum] != '.') return false;
-				if (!(layout.at(wSize + columnNum)[lineNum] == '#' || layout.at(wSize + columnNum)[lineNum] == '.')) return false; //empty space in the end
-				if (!(layout.at(columnNum - 1)[lineNum] == '#' || layout.at(columnNum - 1)[lineNum] == '.')) return false; //empty space in the beginning
-			}
-		}
-	}
-	*/
-
 	bool checkSpace4Word(string word, unsigned int lineNum, unsigned int columnNum, char direction)
 	{
 		unsigned int wSize = word.size();
@@ -335,7 +297,7 @@ public:
 					if (!(layout[columnNum][i] == '.' || layout[columnNum][i] == word[i])) {
 						cout << errorMessage;  return false;
 					}
-				if (lineNum + wSize < lines)
+				if (wSize < lines)
 					if (!(layout[columnNum].at(wSize) == '#' || layout[columnNum].at(wSize) == '.')) { // checks the final position +1
 						cout << errorMessage; return false; 
 					}
@@ -428,11 +390,12 @@ void puzzleCreate()
 	Dict *dictA = &dict;
 	cout << "Dictionary file name ? "; cin >> dict.fileNameInput; 
 	dict.extraction();
-																									//from here
+					
 	//creation of the board
 	int lines, columns;												
 	//ask the user how many lines and columns
-	cout << "Board size (lines columns)? "; cin >> lines >> columns;
+	cout << "Board size (lines columns)? "; cin >> lines >> columns; //<===================================
+																	 //como é int, tem de verificar o erro, cin.claer(), cin.ignore(100000, \n) e repetir
 	//construct the board
 	Board board(lines, columns);
 	Board *boardA = &board;
@@ -445,7 +408,7 @@ void puzzleCreate()
 	while (true) {
 		board.show(); //show the board
 		//the user choose what to do
-		cout << "Position ( LCD / CTRL-Z = stop ) ? "; cin >> position;
+		cout << "Position ( LCD / CTRL-Z = stop ) ? "; cin >> position; //<======================= tornar mais robusto
 		if (cin.eof()) { cin.clear(); break; } //CTRL-Z to get out of the loop
 
 		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
@@ -463,8 +426,10 @@ void puzzleCreate()
 
 
 	} 
-	cout << "\n\n\nYOU GOT OUT!\n\n\n";
-																									//to here
+	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
+	//perguntar ao utilizador se quer continuar caso haja erro
+	//ou prosseguir com a extraçao
+	cout << "\n\n\nYOU GOT OUT!\n\n\n"; //TO REMOVE
 }																		
 /*
 void wordsTest()
@@ -488,8 +453,8 @@ int main()
 	cout << "Word ( - = remove / ? = help )\n";
 	cout << "  there are several options here:\n";
 	cout << "    typing a word to be added to the board\n";
-	cout << "      - to remove a word from the crossword board\n";
-	cout << "      ? gives you a list of possible words to add to the board\n\n";
+	cout << "      '-' to remove a word from the crossword board\n";
+	cout << "      '?' gives you a list of possible words to add to the board\n\n";
 	while (true) {
 		cout << "-----------------------------------------------------\n\n";
 		cout << "OPTIONS:\n";
