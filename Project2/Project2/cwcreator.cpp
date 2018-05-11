@@ -42,7 +42,8 @@ private:
 		//individual word
 		string singleWord = Line.substr(0, found); 
 		//erase the given words
-		if (found < lineSize) Line.erase(0, found + 1);
+	//	if (-1 == found) Line.erase(0, lineSize -1);
+		else if (found < lineSize) Line.erase(0, found + 1);
 		else Line.erase(0, found);
 		
 		return singleWord;
@@ -63,13 +64,11 @@ private:
 	}
 
 public:
-	void extraction()
+	void loadToProgram()
 	{
 		string completeLine;
 		string word;
 		string headline;
-		
-		//int i = -1;
 
 		f.open(fileNameInput);
 		if (!f.is_open()) {
@@ -104,10 +103,10 @@ public:
 				}
 			}
 
-		//	cout << endl << headline  << "  -  ";
-		//	for (unsigned int i = 0; i < synonyms.size(); i++)
-		//		cout << synonyms[i] << " ";
-		//	wordSynonyms[headline] = synonyms;
+			cout << endl << headline  << "  -  ";
+			for (unsigned int i = 0; i < synonyms.size(); i++)
+				cout << synonyms[i] << " ";
+			wordSynonyms[headline] = synonyms;
 
 			//next line
 			do {
@@ -158,6 +157,36 @@ private:
 		if (column + word.size() < columns) layout.at(column + word.size())[line] = '#';
 	}
 
+	bool crossedWordsVertical(unsigned int column, unsigned int line)
+	{
+		if (column > 0) {
+			if (layout[column - 1][line] >= 65 && layout[column - 1][line] <= 90)
+				return true;
+			else return false;
+		}
+		else if (column < columns) {
+			if (layout[column + 1][line] >= 65 && layout[column + 1][line] <= 90)
+				return true;
+			else return false;
+		}
+		else return false;
+	}
+
+	bool crossedWordsHorizontal(unsigned int column, unsigned int line)
+	{
+		if (line > 0) {
+			if (layout[column][line - 1] >= 65 && layout[column][line - 1] <= 90)
+				return true;
+			else return false;
+		}
+		else if (line < lines) {
+			if (layout[column][line + 1] >= 65 && layout[column][line + 1] <= 90)
+				return true;
+			else return false;
+		}
+		else return false;
+	}
+
 	void removeVertical(int line, int column)
 	{
 		if (0 < line) layout[column].at(line - 1) = '.';
@@ -170,12 +199,10 @@ private:
 				layout[column][line + i] = '.';
 				return;
 			}
+			if (crossedWordsVertical(column, line + i)) continue;
 			layout[column][line + i] = '.';
 			i++;
 		}
-	//	for (unsigned int i = 0; i < word.size(); i++)
-	//		layout[column][line + i] = '.';
-	//	if (line + word.size() < lines) layout[column].at(line + word.size()) = '.';
 	}
 
 	void removeHorizontal(int line, int column)
@@ -184,18 +211,16 @@ private:
 		int i = 0;
 		while (true)
 		{
-			if (column + i == lines) return;
+			if (column + i == columns) return;
 			if (layout[column + i][line] == '#')
 			{
 				layout[column + i][line] = '.';
 				return;
 			}
-			layout[column][line + i] = '.';
+			if (crossedWordsHorizontal(column + i, line)) continue;
+			layout[column +i][line] = '.';
 			i++;
 		}
-	//	for (unsigned int i = 0; i < word.size(); i++)
-	//		layout[column + i][line] = '.';
-	//	if (column + word.size() < columns) layout.at(column + word.size())[line] = '.';
 	}
 
 public:
@@ -389,7 +414,7 @@ void puzzleCreate()
 	Dict dict;
 	Dict *dictA = &dict;
 	cout << "Dictionary file name ? "; cin >> dict.fileNameInput; 
-	dict.extraction();
+	dict.loadToProgram();
 					
 	//creation of the board
 	int lines, columns;												
