@@ -4,15 +4,15 @@
 #include <vector>
 #include <map> //<-------------------------------
 #include <algorithm>
+#include <Windows.h>
 
 using namespace std;
 
 class Dict {
 private:
-	//vector < vector <string> > wordSynonyms;
 	map <string, vector <string> > wordSynonyms;
-	//vector <string> newEmptyVector;
 	ifstream f;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 public:
 	string fileNameInput;
@@ -42,7 +42,7 @@ private:
 		//individual word
 		string singleWord = Line.substr(0, found); 
 		//erase the given words
-	//	if (-1 == found) Line.erase(0, lineSize -1);
+		if (-1 == found) Line.erase(0, lineSize);
 		else if (found < lineSize) Line.erase(0, found + 1);
 		else Line.erase(0, found);
 		
@@ -103,9 +103,9 @@ public:
 				}
 			}
 
-			cout << endl << headline  << "  -  ";
-			for (unsigned int i = 0; i < synonyms.size(); i++)
-				cout << synonyms[i] << " ";
+		//	cout << endl << headline  << "  -  ";
+		//	for (unsigned int i = 0; i < synonyms.size(); i++)
+		//		cout << synonyms[i] << " ";
 			wordSynonyms[headline] = synonyms;
 
 			//next line
@@ -119,6 +119,7 @@ public:
 
 	bool headlineExists(string word) 
 	{
+		SetConsoleTextAttribute(hConsole, 244);
 		string errorMessage = "\nThe word doesn't belong to the dictionary!\n\n";
 		map<string, vector<string>>::iterator it = wordSynonyms.begin();
 
@@ -140,6 +141,7 @@ private:
 	vector <vector <char> > layout; //bigger vector "lines", smaller vectors are columns
 	vector <char> newEmpty;
 	vector <string> wordsPlaced;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	void addVertical(string word, int line, int column)
 	{
@@ -162,14 +164,12 @@ private:
 		if (column > 0) {
 			if (layout[column - 1][line] >= 65 && layout[column - 1][line] <= 90)
 				return true;
-			else return false;
 		}
-		else if (column < columns) {
+		if (column < columns) {
 			if (layout[column + 1][line] >= 65 && layout[column + 1][line] <= 90)
 				return true;
-			else return false;
 		}
-		else return false;
+		return false;
 	}
 
 	bool crossedWordsHorizontal(unsigned int column, unsigned int line)
@@ -177,19 +177,22 @@ private:
 		if (line > 0) {
 			if (layout[column][line - 1] >= 65 && layout[column][line - 1] <= 90)
 				return true;
-			else return false;
 		}
-		else if (line < lines) {
+		if (line < lines) {
 			if (layout[column][line + 1] >= 65 && layout[column][line + 1] <= 90)
 				return true;
-			else return false;
 		}
-		else return false;
+		return false;
 	}
 
 	void removeVertical(int line, int column)
 	{
-		if (0 < line) layout[column].at(line - 1) = '.';
+		if (0 < line) {
+			if (layout[column].at(line - 1) == '#') layout[column].at(line - 1) = '.';
+			else return;
+		}
+		else if (!(layout[column].at(line +1) >= 65 && layout[column].at(line + 1) <= 90)) return;
+
 		int i = 0;
 		while (true)
 		{
@@ -199,15 +202,21 @@ private:
 				layout[column][line + i] = '.';
 				return;
 			}
-			if (crossedWordsVertical(column, line + i)) continue;
-			layout[column][line + i] = '.';
+			if (crossedWordsVertical(column, line + i)) {
+				i++; continue;
+			}
+			else layout[column][line + i] = '.';
 			i++;
 		}
 	}
 
 	void removeHorizontal(int line, int column)
 	{
-		if (0 < column) layout.at(column - 1)[line] = '.';
+		if (0 < column) {
+			if (layout.at(column - 1)[line] == '#') layout.at(column - 1)[line] = '.';
+			else return;
+		}
+		else if (!(layout.at(column + 1)[line] >= 65 && layout.at(column + 1)[line] <= 90)) return;
 		int i = 0;
 		while (true)
 		{
@@ -217,8 +226,10 @@ private:
 				layout[column + i][line] = '.';
 				return;
 			}
-			if (crossedWordsHorizontal(column + i, line)) continue;
-			layout[column +i][line] = '.';
+			if (crossedWordsHorizontal(column + i, line)) {
+				i++; continue;
+			}
+			else layout[column +i][line] = '.';
 			i++;
 		}
 	}
@@ -251,22 +262,42 @@ public:
 	}
 
 	void show() {
+		int REDblack = 12; //red on black
+		int BLACKsoftGray = 112; //black on soft gray
+		int SOFTGRAYblack = 7; //soft gray on black
+		int WHITEblack = 15;
+
+		SetConsoleTextAttribute(hConsole, REDblack);
 		char a = 'a';
 		char A = 'A';
-		cout << "  ";
+		cout << "   ";
 		for (unsigned int i = 0; i < columns; i++) {
+			
 			char b = a + i;
 			cout << " " << b;
 		}
 		cout << endl;
 		for (unsigned int j = 0; j < lines; j++) {
+			SetConsoleTextAttribute(hConsole, REDblack);
 			char B = A + j;
-			cout << " " << B;
+			cout << " " << B << " ";
 			for (unsigned int i = 0; i < columns; i++) {
-				cout << " " << layout[i][j];
+				if (layout[i][j] == '#')
+				{
+					cout << " ";
+					SetConsoleTextAttribute(hConsole, SOFTGRAYblack);
+					cout << layout[i][j];
+				}
+				else
+				{
+					SetConsoleTextAttribute(hConsole, BLACKsoftGray);
+					cout << " " << layout[i][j];
+				}
+				
 			}
 			cout << endl;
 		}
+		SetConsoleTextAttribute(hConsole, WHITEblack);
 	}
 
 	int whichLine(string position)
@@ -303,12 +334,17 @@ public:
 		int column = whichColumn(position);
 		char direction = position[2];
 
+		if (layout[column][line] == '#' || layout[column][line] == '.') {
+			cout << "\nThere aren't any word to remove in this position\n\n";
+			return;
+		}
 		if ('V' == direction || 'v' == direction) removeVertical(line, column);
 		if ('H' == direction || 'h' == direction) removeHorizontal(line, column);
 	}
 
 	bool checkSpace4Word(string word, unsigned int lineNum, unsigned int columnNum, char direction)
 	{
+		SetConsoleTextAttribute(hConsole, 244);
 		unsigned int wSize = word.size();
 		string errorMessage = "\nThe word you are trying to insert, doesn't fit in the board!\n\n";
 
@@ -379,6 +415,7 @@ public:
 
 	bool unusedWord(string word)
 	{
+		SetConsoleTextAttribute(hConsole, 244);
 		string errorMessage = "\nThe word was already used!\n\n";
 		for (unsigned int i = 0; i < wordsPlaced.size(); i++)
 			if (word == wordsPlaced[i])
@@ -451,11 +488,15 @@ void puzzleCreate()
 
 
 	} 
+	//if (board.AllWordsValidity()) {
+	//cout << "All words are valid, the extraction will continue"; 
+	//board.extraction
 	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
 	//perguntar ao utilizador se quer continuar caso haja erro
 	//ou prosseguir com a extraçao
-	cout << "\n\n\nYOU GOT OUT!\n\n\n"; //TO REMOVE
-}																		
+
+}	
+
 /*
 void wordsTest()
 {
@@ -493,11 +534,7 @@ int main()
 			cin >> chosenOption;
 			if ("0" == chosenOption) return 0;
 			if ("1" == chosenOption) {
-				puzzleCreate(); 
-				break;
-			}
-			if ("2" == chosenOption) {
-				//wordsTest();
+				puzzleCreate();
 				break;
 			}
 			//if ("2" == chosenOption) { puzzleResume(); break; }
