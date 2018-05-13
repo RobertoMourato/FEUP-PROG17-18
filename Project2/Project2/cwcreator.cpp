@@ -235,6 +235,22 @@ private:
 		}
 	}
 
+	void getLettersRight(string &word, string position)
+	{
+		unsigned int line = whichLine(position);
+		unsigned int column = whichColumn(position);
+		char direction = position[2];
+
+		if ('v' == direction || 'V' == direction)
+			for (unsigned int i = 0; i < word.size(); i++) {
+				if (layout[column][line + i] != '.') word[i] = layout[column + i][line];
+			}
+		else if ('h' == direction || 'H' == direction)
+			for (unsigned int i = 0; i < word.size(); i++) {
+				if (layout[column + i][line] != '.') word[i] = layout[column + i][line];
+			}				
+	}
+
 public:
 	Board()      
 	{
@@ -349,8 +365,14 @@ public:
 		if ('H' == direction || 'h' == direction) removeHorizontal(line, column);
 	}
 
-	bool checkSpace4Word(string word, unsigned int lineNum, unsigned int columnNum, char direction)
+	bool checkSpace4Word(string word, string position)
 	{
+		//process the position string into line number, column number and direction
+		unsigned int lineNum = whichLine(position);
+		unsigned int columnNum = whichColumn(position);
+		char direction = position[2];
+
+		//change color
 		SetConsoleTextAttribute(hConsole, 244);
 		unsigned int wSize = word.size();
 		string errorMessage = "\nThe word you are trying to insert, doesn't fit in the board!\n\n";
@@ -471,6 +493,47 @@ public:
 		else return true;
 	}
 
+	//por acabar, loop no map
+	void helpInsertWord(string position) {
+		string wordToCreate;
+		string errorMessageLength = "A word with so many letters don't fit!\n\nIf the help is no longer needed, press CTRL-Z";
+		string errorMessageInput = "Only a numerical value is valid in here! Try again";
+		string returnMessage = "You chose to leave the help!";
+		bool errorInWordSize = false, errorInput = false;
+		do {
+			//size of the word
+			cout << "Insert the number of letters you want the word to have (CTRL-Z to leave the help) : ";
+			int lettersNumber; cin >> lettersNumber;
+			SetConsoleTextAttribute(hConsole, 244);
+			if (cin.fail()) {
+				cin.clear();
+				cin.ignore(1000000, '\n');
+				cout << errorMessageInput;
+				SetConsoleTextAttribute(hConsole, 15);
+				errorInput = true;
+				continue;
+			}
+			if (cin.eof()) {
+				cin.clear();
+				cout << returnMessage;
+				SetConsoleTextAttribute(hConsole, 15);
+				return;
+			}
+			
+			//word with the asked size
+			for (int i = 0; i <= lettersNumber; i++)
+				wordToCreate += "?";
+			//is there any space available?
+			if (checkSpace4Word(wordToCreate, position)) errorInWordSize = true;
+		} while (errorInput || errorInWordSize);
+
+		getLettersRight(wordToCreate, position);
+		
+		//for que corre o map e verifica se a WordToCreate coincide com a respetiva palavra do map
+		//se sim da cout, se nao, continua
+
+	}
+
 	//allWordsValidity()
 
 	//extraction
@@ -482,15 +545,10 @@ bool checkValidity(Dict *dictP, Board *boardP, string word, string position)
 {
 	//check the existance of the word
 	if (!dictP->headlineExists(word)) return false;
-	
-	//process the position string into line number, column number and direction
-	int lineNum = boardP->whichLine(position);
-	int columnNum = boardP->whichColumn(position);
-	char direction = position[2];
 
 //	if (!boardP->clearSpace4Word(word.size(), lineNum, columnNum, direction)) return false;
 	if (!boardP->unusedWord(word)) return false;
-	if (!boardP->checkSpace4Word(word, lineNum, columnNum, direction)) return false;
+	if (!boardP->checkSpace4Word(word, position)) return false;
 	return true;
 }
 
