@@ -2,11 +2,11 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <map> //<-------------------------------
+#include <map>
 #include <algorithm>
 #include <Windows.h>
-
 using namespace std;
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 class Dict {
 private:
@@ -141,6 +141,7 @@ private:
 	vector <vector <char> > layout; //bigger vector "lines", smaller vectors are columns
 	vector <char> newEmpty;
 	vector <string> wordsPlaced;
+	map <string, string> positionWordsPlaced;
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	void addVertical(string word, int line, int column)
@@ -270,7 +271,7 @@ public:
 		SetConsoleTextAttribute(hConsole, REDblack);
 		char a = 'a';
 		char A = 'A';
-		cout << "   ";
+		cout << "\n   ";
 		for (unsigned int i = 0; i < columns; i++) {
 			
 			char b = a + i;
@@ -326,14 +327,20 @@ public:
 		if ('V' == direction || 'v' == direction) addVertical(word, lineNum, columnNum);
 		if ('H' == direction || 'v' == direction) addHorizontal(word, lineNum, columnNum);
 
+		positionWordsPlaced[position] = word;
 		wordsPlaced.push_back(word);
 	}
 
+	//alterar forma de execuçao
 	void removeWord(string position) {
 		int line = whichLine(position);
 		int column = whichColumn(position);
 		char direction = position[2];
-
+		//
+		// verificar se a posiçao no map é valida
+		// retirar a palavra do map
+		// retirar a palavra do board
+		//
 		if (layout[column][line] == '#' || layout[column][line] == '.') {
 			cout << "\nThere aren't any word to remove in this position\n\n";
 			return;
@@ -413,10 +420,14 @@ public:
 		return true;
 	}
 
+	//implementar o loop no map em vez de no vector
 	bool unusedWord(string word)
 	{
 		SetConsoleTextAttribute(hConsole, 244);
 		string errorMessage = "\nThe word was already used!\n\n";
+		//
+		//implementar o loop para correr o map e verificar se a palavra ja foi usada 
+		//
 		for (unsigned int i = 0; i < wordsPlaced.size(); i++)
 			if (word == wordsPlaced[i])
 			{
@@ -425,6 +436,44 @@ public:
 			}
 		return true;
 	}
+
+	bool validPosition(string position) {
+		SetConsoleTextAttribute(hConsole, 244);
+		char line = position[0];
+		char column = position[1];
+		char direction = position[2];
+		int lineN = whichLine(position);
+		int columnN = whichColumn(position);
+		string errorMessageChar = "\nOnly upper case and down case letters are, respectively, allowed in the first and second place!\n";
+		string errorMessageOutofBounds = "\nIt looks like the position %s doesn't exist in this board!\n";
+		string errorMessageDirection = "\nThat direction doesn't exist. Choose between vertical 'V' or horizontal 'H'!\n";
+
+		if (!(direction == 'v' || direction == 'V' || direction == 'h' || direction == 'H')) {
+			cout << errorMessageDirection;
+			return false;
+		}
+		else if (!(line >= 65 && line <= 90)) {
+			cout << errorMessageChar;
+			return false;
+		}
+		else if (!(column >= 97 && column <= 122)) {
+			cout << errorMessageChar;
+			return false;
+		}
+		else if (lineN > lines) {
+			printf(errorMessageOutofBounds.c_str(), position.c_str());
+			return false;
+		}
+		else if (columnN > columns) {
+			printf(errorMessageOutofBounds.c_str(), position.c_str());
+			return false;
+		}
+		else return true;
+	}
+
+	//allWordsValidity()
+
+	//extraction
 };
 
 
@@ -454,10 +503,33 @@ void puzzleCreate()
 	dict.loadToProgram();
 					
 	//creation of the board
-	int lines, columns;												
+	int lines, columns;
+
 	//ask the user how many lines and columns
-	cout << "Board size (lines columns)? "; cin >> lines >> columns; //<===================================
-																	 //como é int, tem de verificar o erro, cin.claer(), cin.ignore(100000, \n) e repetir
+	//error proof, the do while loop will work when there are errors in the input and the user has more chances
+
+	bool cinError;
+	do {									//<=========== robusto o suficiente???
+		string errorMessage26 = "\nI'm sorry but that number is too big! Write that again.\n";
+		string errorMessageCinFail = "\nThose aren't valid sizes for the board! Try again...\n";
+		cinError = false;
+		cout << "Board size[max size=26] (lines columns)? "; cin >> lines >> columns; 
+
+		SetConsoleTextAttribute(hConsole, 244);
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore(1000000, '\n');
+			cout << errorMessageCinFail;
+			cinError = true;
+		}
+		else if (lines > 26 || columns > 26) {
+			cout << errorMessage26;
+			cinError = true;
+		}
+		SetConsoleTextAttribute(hConsole, 15);
+	} while (cinError);	
+
+
 	//construct the board
 	Board board(lines, columns);
 	Board *boardA = &board;
@@ -474,23 +546,30 @@ void puzzleCreate()
 		if (cin.eof()) { cin.clear(); break; } //CTRL-Z to get out of the loop
 
 		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
-		transform(word.begin(), word.end(), word.begin(), ::toupper);
+		transform(word.begin(), word.end(), word.begin(), ::toupper); //upper case the word
+
+		//check if position input is correct
+		if (!board.validPosition(position)) {
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << "That position is not valid... Try Again!\n";
+			SetConsoleTextAttribute(hConsole, 15);
+		}
 		//to remove a word
-		if ("-" == word) {
+		else if ("-" == word) {
 			board.removeWord(position);
 		}
+		//to help the user
 		else if ("?" == word) {
+			//board.helpInsertWord(position);
 			//TO BE COMPLETED <=========================================================================================
 		}
-
+		//to add the respective word
 		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
 
-
-
 	} 
-	//if (board.AllWordsValidity()) {
+	//if (board.allWordsValidity()) {
 	//cout << "All words are valid, the extraction will continue"; 
-	//board.extraction
+	//board.extraction();
 	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
 	//perguntar ao utilizador se quer continuar caso haja erro
 	//ou prosseguir com a extraçao
@@ -515,12 +594,13 @@ int main()
 	cout << "    Line and Column represented by its name\n";
 	cout << "      upper case for lines\n";
 	cout << "      lower case for columns\n";
-	cout << "    Direction can be vertical (V) or horizontal (H)\n\n";
+	cout << "    Direction can be vertical (V) or horizontal (H)\n";
+	cout << "  CTRL-Z will end the board creation and start the file extraction process";
 	cout << "Word ( - = remove / ? = help )\n";
 	cout << "  there are several options here:\n";
 	cout << "    typing a word to be added to the board\n";
-	cout << "      '-' to remove a word from the crossword board\n";
-	cout << "      '?' gives you a list of possible words to add to the board\n\n";
+	cout << "    '-' to remove a word from the crossword board\n";
+	cout << "    '?' gives you a list of possible words to add to the board\n\n";
 	while (true) {
 		cout << "-----------------------------------------------------\n\n";
 		cout << "OPTIONS:\n";
