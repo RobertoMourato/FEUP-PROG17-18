@@ -552,7 +552,7 @@ public:
 
 		if ('v' == direction || 'V' == direction)
 			for (unsigned int i = 0; i < word.size(); i++) {
-				if (layout[column][line + i] != '.') word[i] = layout[column + i][line];
+				if (layout[column][line + i] != '.') word[i] = layout[column][line +i];
 			}
 		else if ('h' == direction || 'H' == direction)
 			for (unsigned int i = 0; i < word.size(); i++) {
@@ -618,15 +618,13 @@ void helpInsertWord(string position, Board *boardP, Dict *dictP) {
 			
 			SetConsoleTextAttribute(hConsole, 15);
 			//word with the asked size
-			for (int i = 0; i <= lettersNumber; i++)
+			for (int i = 0; i < lettersNumber; i++)
 				wordToCreate += "?";
 			//is there any space available?
 			if (!boardP->checkSpace4Word(wordToCreate, position)) errorInWordSize = true;
 		} while (errorInput || errorInWordSize);
 
-		cout << wordToCreate;
 		boardP->getLettersRight(wordToCreate, position);
-		cout << wordToCreate;
 		vector<string> resultWord = dictP->matchingWords(wordToCreate);
 
 		if (resultWord.size() == 0) {
@@ -653,41 +651,49 @@ void helpInsertWord(string position, Board *boardP, Dict *dictP) {
 				repeatNoMatchingWords = true; continue;
 			}
 			//leave the function
-			else if (!repeat) return;
+			else if (!repeat) {
+				cout << returnMessage; return;
+			}
 		}
 		else {
 			//show the content of the vector with the resulting words
 			cout << endl;
 			for (unsigned int i = 0; i < resultWord.size(); i++)
 				cout << "\t" << resultWord[i];
-			cout << "Choose one of them to add to the board [CTRL-Z if you want to cancel help]: ";
-			bool wordMatchesVector = false;
+			cout << "\n\nChoose one of them to add to the board [CTRL-Z if you want to cancel help]: ";
+			bool wordMatchesVector;
 			string answer;
-			cin >> answer;
-			for (unsigned int i = 0; i < resultWord.size(); i++)
-				if (resultWord[i] == answer) {
-					wordMatchesVector = true; 
-					break;
-				}
-			if (cin.eof()) {
-				cin.clear(); cout << returnMessage;  return;
-			}
-			while (cin.fail() || !wordMatchesVector) {
+		//	cin >> answer;
+		//	for (unsigned int i = 0; i < resultWord.size(); i++)
+		//		if (resultWord[i] == answer) {
+		//			wordMatchesVector = true; 
+		//			break;
+		//		}
+		//	if (cin.eof()) {
+		//		cin.clear(); cout << returnMessage;  return;
+		//	}
+			do {
 				cin.clear();
-				cin.ignore(1000000, '\n');
-				SetConsoleTextAttribute(hConsole, 244);
-				cout << errorInputWord;
-				SetConsoleTextAttribute(hConsole, 15);
+				wordMatchesVector = false;
 				cin >> answer;
+				if (cin.fail()) {
+					cin.clear();
+					cin.ignore(1000000, '\n');
+					SetConsoleTextAttribute(hConsole, 244);
+					cout << errorInputWord;
+					SetConsoleTextAttribute(hConsole, 15);
+					continue;
+				}
+				transform(answer.begin(), answer.end(), answer.begin(), ::toupper); //upper case
 				for (unsigned int i = 0; i < resultWord.size(); i++)
-					if (resultWord[i] == answer) {
-						wordMatchesVector = true;
+					if (resultWord[i] == answer) {	//searches for the word in the vector, because all the checking was done before 
+						wordMatchesVector = true;	//and a mistaken word here would break the "security" of the board
 						break;
 					}
 				if (cin.eof()) {
 					cin.clear(); cout << returnMessage;  return;
 				}
-			}
+			} while (cin.fail() || !wordMatchesVector);
 			boardP->addWord(answer, position);
 		}
 	}
