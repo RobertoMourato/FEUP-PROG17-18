@@ -204,10 +204,10 @@ class Board {
 private:
 	unsigned int lines, columns;
 	vector <vector <char> > layout; //bigger vector "lines", smaller vectors are columns
-	vector <char> newEmpty;
-	vector <string> wordsPlaced;
-	map <string, string> positionWordsPlaced;
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	vector <char> newEmpty; //needed to fill the vector
+	vector <string> wordsPlaced; //to be erased
+	map <string, string> positionWordsPlaced; //to handle add and remove words, check on repeated words and output/input for/from files
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //console colors
 
 	void addVertical(string word, int line, int column)
 	{
@@ -300,7 +300,23 @@ private:
 		}
 	}
 
-	
+	void printInFile(fstream f) {
+		//the board
+		for (unsigned int i = 0; i < columns; i++) {
+			for (unsigned int j = 0; j < lines; i++) {
+				f << layout[i][j] << " ";
+			}
+			cout << endl;
+		}
+		//the position and word
+		f << endl << endl;
+		map<string, string>::iterator it = positionWordsPlaced.begin();
+
+		for (it = positionWordsPlaced.begin(); it != positionWordsPlaced.end(); it++) {
+			f << (*it).first << " " << (*it).second;
+			f << endl;
+		}
+	}
 
 public:
 	Board()      
@@ -560,12 +576,49 @@ public:
 			}				
 	}
 
-	//allWordsValidity()
+/*	string getVerticalWord(string position) {
 
-	//extraction
+	}
+
+	string getHorizontalWord(string position) {
+	
+	}*/
+
+	void extraction() {
+		int n = -1;
+		string fileOutput, docType;
+		bool existingFile;
+		fstream f;
+		do {
+			n++;
+			fileOutput = "b";
+			docType = ".txt";
+			existingFile = false;
+			if (n < 10) fileOutput += "00" + to_string(n) + docType;
+			else if (n < 100) fileOutput += "0" + to_string(n) + docType;
+			else fileOutput += to_string(n) + docType;
+			cout << fileOutput;
+
+			f.open(fileOutput);
+			if (f.is_open()) {
+				existingFile = true;
+				f.close();
+			}
+			else {
+				f.open(fileOutput, ios::out | ios::in | ios::trunc);
+			}
+		} while (existingFile);
+
+		printInFile(f);
+
+
+	}
 };
 
-
+//vvvvvvvvvvvv TO BE MADE
+bool allWordsValidity() {
+	return true;
+}
  
 bool checkValidity(Dict *dictP, Board *boardP, string word, string position) 
 {
@@ -766,15 +819,15 @@ void puzzleCreate()
 		//to help the user
 		else if ("?" == word) {
 			helpInsertWord(position, boardA, dictA);
-			//TO BE COMPLETED <=========================================================================================
 		}
 		//to add the respective word
 		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
 
 	} 
-	//if (board.allWordsValidity()) {
-	//cout << "All words are valid, the extraction will continue"; 
-	//board.extraction();
+	if (allWordsValidity()) {
+		cout << "All words are valid, the extraction will continue";
+		//board.extraction();
+	}
 	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
 	//perguntar ao utilizador se quer continuar caso haja erro
 	//ou prosseguir com a extraçao
