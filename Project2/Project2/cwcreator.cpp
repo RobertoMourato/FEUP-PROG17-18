@@ -63,6 +63,55 @@ private:
 		return true;
 	}
 
+	bool wildcardMatch(const char *str, const char *strWild)
+	{
+		// We have a special case where string is empty ("") and the mask is "*".
+		// We need to handle this too. So we can't test on !*str here.
+		// The loop breaks when the match string is exhausted.
+		while (*strWild)
+		{
+			// Single wildcard character
+			if (*strWild == '?')
+			{
+				// Matches any character except empty string
+				if (!*str)
+					return false;
+				// OK next
+				++str;
+				++strWild;
+			}
+			else if (*strWild == '*')
+			{
+				// Need to do some tricks.
+				// 1. The wildcard * is ignored.
+				// So just an empty string matches. This is done by recursion.
+				// Because we eat one character from the match string,
+				// the recursion will stop.
+				if (wildcardMatch(str, strWild + 1))
+					// we have a match and the * replaces no other character
+					return true;
+				// 2. Chance we eat the next character and try it again,
+				// with a wildcard * match. This is done by recursion.
+				// Because we eat one character from the string,
+				// the recursion will stop.
+				if (*str && wildcardMatch(str + 1, strWild))
+					return true;
+				// Nothing worked with this wildcard.
+				return false;
+			}
+			else
+			{
+				// Standard compare of 2 chars. Note that *str might be 0 here,
+				// but then we never get a match on *strWild
+				// that has always a value while inside this loop.
+				if (toupper(*str++) != toupper(*strWild++))
+					return false;
+			}
+		}
+		// Have a match? Only if both are at the end...
+		return !*str && !*strWild;
+	}
+
 public:
 	void loadToProgram()
 	{
@@ -130,6 +179,22 @@ public:
 		}
 		cout << errorMessage;
 		return false;
+	}
+
+	vector<string> matchingWords(string wildCard)
+	{
+		vector<string> resultWord;
+		map<string, vector<string>>::iterator it = wordSynonyms.begin();
+		int maxNumber = 10;
+		
+		for (it = wordSynonyms.begin(); it != wordSynonyms.end(); it++) {
+			if (maxNumber == 0) break;
+			if (wildcardMatch(it->first.c_str(),wildCard.c_str())) {
+				resultWord.push_back(it->first);
+				maxNumber--;
+			}
+		}
+		return resultWord;
 	}
 
 };
@@ -235,21 +300,7 @@ private:
 		}
 	}
 
-	void getLettersRight(string &word, string position)
-	{
-		unsigned int line = whichLine(position);
-		unsigned int column = whichColumn(position);
-		char direction = position[2];
-
-		if ('v' == direction || 'V' == direction)
-			for (unsigned int i = 0; i < word.size(); i++) {
-				if (layout[column][line + i] != '.') word[i] = layout[column + i][line];
-			}
-		else if ('h' == direction || 'H' == direction)
-			for (unsigned int i = 0; i < word.size(); i++) {
-				if (layout[column + i][line] != '.') word[i] = layout[column + i][line];
-			}				
-	}
+	
 
 public:
 	Board()      
@@ -384,7 +435,7 @@ public:
 		if ('V' == direction || 'v' == direction) {
 			if (0 == lineNum) {  //beginning of the column
 				for (unsigned int i = 0; i < wSize; i++) //checks every position
-					if (!(layout[columnNum][i] == '.' || layout[columnNum][i] == word[i])) {
+					if (!(layout[columnNum][i] == '.' || layout[columnNum][i] == word[i] || word[i] == '?')) {
 						cout << errorMessage;  return false;
 					}
 				if (wSize < lines)
@@ -397,7 +448,7 @@ public:
 					cout << errorMessage; return false;
 				}
 				for (unsigned int i = 0; i < wSize; i++) //all position checking
-					if (!(layout[columnNum][i + lineNum] == '.' || layout[columnNum][i + lineNum] == word[i])) {
+					if (!(layout[columnNum][i + lineNum] == '.' || layout[columnNum][i + lineNum] == word[i] || word[i] == '?')) {
 						cout << errorMessage; return false;
 					}
 				if (lineNum + wSize < lines) 
@@ -414,7 +465,7 @@ public:
 			if (0 == columnNum)
 			{
 				for (unsigned int i = 0; i < wSize; i++)
-					if (!(layout[i][lineNum] == '.' || layout[i][lineNum] == word[i])) { //all positions
+					if (!(layout[i][lineNum] == '.' || layout[i][lineNum] == word[i] || word[i] == '?')) { //all positions
 						cout << errorMessage; return false;
 					}
 				if (columnNum + wSize < columns) 
@@ -427,7 +478,7 @@ public:
 					cout << errorMessage; return false;
 				}
 				for (unsigned int i = 0; i < wSize; i++) //all position checking
-					if (!(layout[i + columnNum][lineNum] == '.' || layout[i + columnNum][lineNum] == word[i])) {
+					if (!(layout[i + columnNum][lineNum] == '.' || layout[i + columnNum][lineNum] == word[i] || word[i] == '?')) {
 						cout << errorMessage; return false;
 					}
 				if (columnNum + wSize < columns) 
@@ -464,8 +515,8 @@ public:
 		char line = position[0];
 		char column = position[1];
 		char direction = position[2];
-		int lineN = whichLine(position);
-		int columnN = whichColumn(position);
+		unsigned int lineN = whichLine(position);
+		unsigned int columnN = whichColumn(position);
 		string errorMessageChar = "\nOnly upper case and down case letters are, respectively, allowed in the first and second place!\n";
 		string errorMessageOutofBounds = "\nIt looks like the position %s doesn't exist in this board!\n";
 		string errorMessageDirection = "\nThat direction doesn't exist. Choose between vertical 'V' or horizontal 'H'!\n";
@@ -493,45 +544,20 @@ public:
 		else return true;
 	}
 
-	//por acabar, loop no map
-	void helpInsertWord(string position) {
-		string wordToCreate;
-		string errorMessageLength = "A word with so many letters don't fit!\n\nIf the help is no longer needed, press CTRL-Z";
-		string errorMessageInput = "Only a numerical value is valid in here! Try again";
-		string returnMessage = "You chose to leave the help!";
-		bool errorInWordSize = false, errorInput = false;
-		do {
-			//size of the word
-			cout << "Insert the number of letters you want the word to have (CTRL-Z to leave the help) : ";
-			int lettersNumber; cin >> lettersNumber;
-			SetConsoleTextAttribute(hConsole, 244);
-			if (cin.fail()) {
-				cin.clear();
-				cin.ignore(1000000, '\n');
-				cout << errorMessageInput;
-				SetConsoleTextAttribute(hConsole, 15);
-				errorInput = true;
-				continue;
-			}
-			if (cin.eof()) {
-				cin.clear();
-				cout << returnMessage;
-				SetConsoleTextAttribute(hConsole, 15);
-				return;
-			}
-			
-			//word with the asked size
-			for (int i = 0; i <= lettersNumber; i++)
-				wordToCreate += "?";
-			//is there any space available?
-			if (checkSpace4Word(wordToCreate, position)) errorInWordSize = true;
-		} while (errorInput || errorInWordSize);
+	void getLettersRight(string &word, string position)
+	{
+		unsigned int line = whichLine(position);
+		unsigned int column = whichColumn(position);
+		char direction = position[2];
 
-		getLettersRight(wordToCreate, position);
-		
-		//for que corre o map e verifica se a WordToCreate coincide com a respetiva palavra do map
-		//se sim da cout, se nao, continua
-
+		if ('v' == direction || 'V' == direction)
+			for (unsigned int i = 0; i < word.size(); i++) {
+				if (layout[column][line + i] != '.') word[i] = layout[column + i][line];
+			}
+		else if ('h' == direction || 'H' == direction)
+			for (unsigned int i = 0; i < word.size(); i++) {
+				if (layout[column + i][line] != '.') word[i] = layout[column + i][line];
+			}				
 	}
 
 	//allWordsValidity()
@@ -550,6 +576,121 @@ bool checkValidity(Dict *dictP, Board *boardP, string word, string position)
 	if (!boardP->unusedWord(word)) return false;
 	if (!boardP->checkSpace4Word(word, position)) return false;
 	return true;
+}
+
+
+void helpInsertWord(string position, Board *boardP, Dict *dictP) {
+	bool repeatNoMatchingWords = true;
+	while (repeatNoMatchingWords) {
+		repeatNoMatchingWords = false;
+		string wordToCreate;
+		string errorMessageLength = "A word with so many letters don't fit!\n\nIf the help is no longer needed, press CTRL-Z";
+		string errorMessageInput = "Only a numerical value is valid in here! Try again";
+		string errorMessageBoolInput = "Only a 0 or a 1 is a valid option here! Try again";
+		string returnMessage = "You chose to leave the help!";
+		string warningMessageNoWords = "I'm sorry but no words were found that match the place you chose...\nDo you want to try again?\n";
+		string errorInputWord = "You miswrote the word you chose!\nTry Again: ";
+		bool errorInWordSize, errorInput;
+		//input number of letters, input error robust (checks for space in the board and the right input in first question) and creates word and checks for space
+		do {
+			//inicialize flags
+			errorInWordSize = false;
+			errorInput = false;
+			SetConsoleTextAttribute(hConsole, 15);
+			//size of the word
+			cout << "Insert the number of letters you want the word to have (CTRL-Z to leave the help) : ";
+			int lettersNumber; cin >> lettersNumber;
+			SetConsoleTextAttribute(hConsole, 244);
+			if (cin.eof()) {
+				cin.clear();
+				cout << returnMessage;
+				SetConsoleTextAttribute(hConsole, 15);
+				return;
+			}
+			if (cin.fail()) {
+				cin.clear();
+				cin.ignore(1000000, '\n');
+				cout << errorMessageInput;
+				SetConsoleTextAttribute(hConsole, 15);
+				errorInput = true;
+				continue;
+			}
+			
+			SetConsoleTextAttribute(hConsole, 15);
+			//word with the asked size
+			for (int i = 0; i <= lettersNumber; i++)
+				wordToCreate += "?";
+			//is there any space available?
+			if (!boardP->checkSpace4Word(wordToCreate, position)) errorInWordSize = true;
+		} while (errorInput || errorInWordSize);
+
+		cout << wordToCreate;
+		boardP->getLettersRight(wordToCreate, position);
+		cout << wordToCreate;
+		vector<string> resultWord = dictP->matchingWords(wordToCreate);
+
+		if (resultWord.size() == 0) {
+			//waring message
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << warningMessageNoWords;
+			SetConsoleTextAttribute(hConsole, 15);
+			//choose what to do
+			bool repeat;
+			cout << "0 - Finish help\n1 - Try again\n\tAnswer -> ";
+			cin >> repeat;
+			//input error robustness
+			while (cin.fail()) {
+				cin.clear();
+				cin.ignore(1000000, '\n');
+				SetConsoleTextAttribute(hConsole, 244);
+				cout << errorMessageBoolInput;
+				SetConsoleTextAttribute(hConsole, 15);
+				cout << "\n\tAnswer -> ";
+				cin >> repeat;
+			}
+			//repeat the funciton
+			if (repeat) {
+				repeatNoMatchingWords = true; continue;
+			}
+			//leave the function
+			else if (!repeat) return;
+		}
+		else {
+			//show the content of the vector with the resulting words
+			cout << endl;
+			for (unsigned int i = 0; i < resultWord.size(); i++)
+				cout << "\t" << resultWord[i];
+			cout << "Choose one of them to add to the board [CTRL-Z if you want to cancel help]: ";
+			bool wordMatchesVector = false;
+			string answer;
+			cin >> answer;
+			for (unsigned int i = 0; i < resultWord.size(); i++)
+				if (resultWord[i] == answer) {
+					wordMatchesVector = true; 
+					break;
+				}
+			if (cin.eof()) {
+				cin.clear(); cout << returnMessage;  return;
+			}
+			while (cin.fail() || !wordMatchesVector) {
+				cin.clear();
+				cin.ignore(1000000, '\n');
+				SetConsoleTextAttribute(hConsole, 244);
+				cout << errorInputWord;
+				SetConsoleTextAttribute(hConsole, 15);
+				cin >> answer;
+				for (unsigned int i = 0; i < resultWord.size(); i++)
+					if (resultWord[i] == answer) {
+						wordMatchesVector = true;
+						break;
+					}
+				if (cin.eof()) {
+					cin.clear(); cout << returnMessage;  return;
+				}
+			}
+			boardP->addWord(answer, position);
+		}
+	}
 }
 
 void puzzleCreate()
@@ -618,7 +759,7 @@ void puzzleCreate()
 		}
 		//to help the user
 		else if ("?" == word) {
-			//board.helpInsertWord(position);
+			helpInsertWord(position, boardA, dictA);
 			//TO BE COMPLETED <=========================================================================================
 		}
 		//to add the respective word
