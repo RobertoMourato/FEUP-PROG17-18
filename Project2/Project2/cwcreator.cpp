@@ -214,6 +214,7 @@ private:
 	void addVertical(string word, int line, int column)
 	{
 		if (0 < line) layout[column].at(line - 1) = '#';
+	
 		for (unsigned int i = 0; i < word.size(); i++)
 			layout[column][line + i] = word[i];
 		if (line + word.size() < lines) layout[column].at(line + word.size()) = '#';
@@ -645,7 +646,7 @@ public:
 			if (n < 10) fileOutput += "00" + to_string(n) + docType;
 			else if (n < 100) fileOutput += "0" + to_string(n) + docType;
 			else fileOutput += to_string(n) + docType;
-			cout << fileOutput;
+			std::cout << fileOutput;
 
 			f.open(fileOutput);
 			if (f.is_open()) {
@@ -700,6 +701,7 @@ bool checkValidity(Dict *dictP, Board *boardP, string word, string position)
 	return true;
 }
 
+void helpInsertWord(string position, Board *boardP, Dict *dictP) {
 void helpInsertWord(string position, Board *boardP, Dict *dictP) {
 	bool repeatNoMatchingWords = true;
 	while (repeatNoMatchingWords) {
