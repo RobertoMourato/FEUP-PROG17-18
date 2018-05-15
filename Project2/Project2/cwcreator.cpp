@@ -113,7 +113,7 @@ private:
 	}
 
 public:
-	void loadToProgram()
+	bool loadToProgram()
 	{
 		string completeLine;
 		string word;
@@ -121,12 +121,13 @@ public:
 
 		f.open(fileNameInput);
 		if (!f.is_open()) {
-			cerr << "File " << fileNameInput << " could not be found!\n";
-			system("pause");
-			return;
+			SetConsoleTextAttribute(hConsole, 244);
+			cerr << "File " << fileNameInput << " could not be found!\nTry again!\n";
+			SetConsoleTextAttribute(hConsole, 15);
+			return false;
 		}
 
-		cout << "extrating the words and synonyms...\n";
+		cout << "loading...\n";
 																			//do while aqui
 		//first line, except lines with "[ (...) ]"
 		do {
@@ -162,8 +163,9 @@ public:
 				getline(f, completeLine);
 			} while (!validLine(completeLine));
 		}
-		cout << "end of extraction\n";
+		cout << "end of loading of words and synonyms\n";
 		f.close();
+		return true;
 	}
 
 	bool headlineExists(string word) 
@@ -278,12 +280,12 @@ private:
 
 	void removeHorizontal(int line, int column)
 	{
-	/*	if (0 < column) {
+		if (0 < column) {
 			if (layout.at(column - 1)[line] == '#') layout.at(column - 1)[line] = '.';
 			else return;
 		}
-		else if (!(layout.at(column + 1)[line] >= 65 && layout.at(column + 1)[line] <= 90)) return;
-	*/
+		//else if (!(layout.at(column + 1)[line] >= 65 && layout.at(column + 1)[line] <= 90)) return;
+	
 		int i = 0;
 		while (true)
 		{
@@ -518,9 +520,6 @@ public:
 	{
 		SetConsoleTextAttribute(hConsole, 244);
 		string errorMessage = "\nThe word was already used!\n\n";
-		//
-		//implementar o loop para correr o map e verificar se a palavra ja foi usada 
-		//
 		map<string, string>::iterator it = positionWordsPlaced.begin();
 
 		for (it; it != positionWordsPlaced.end(); it++)
@@ -580,14 +579,6 @@ public:
 				if (layout[column + i][line] != '.') word[i] = layout[column + i][line];
 			}				
 	}
-
-/*	string getVerticalWord(string position) {
-
-	}
-
-	string getHorizontalWord(string position) {
-	
-	}*/
 
 	void extraction() {
 		int n = -1;
@@ -752,9 +743,33 @@ void puzzleCreate()
 	//dictionary creation and extraction
 	Dict dict;
 	Dict *dictA = &dict;
-	cout << "Dictionary file name ? "; cin >> dict.fileNameInput; 
-	dict.loadToProgram();
-					
+	bool errorOpeningFile;
+	do {
+		errorOpeningFile = false;
+		cin.clear();
+		string errorMessageFileInput = "That input is not valid! Try again\n";
+		cout << "Dictionary file name ? ";
+		cin >> dict.fileNameInput;
+		if (cin.fail()) {
+			cin.ignore(1000000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageFileInput;
+			SetConsoleTextAttribute(hConsole, 15);
+			continue;
+		}
+		if (cin.eof())
+		{
+			cin.ignore(100, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageFileInput;
+			SetConsoleTextAttribute(hConsole, 15);
+			continue;
+		}
+		if (!dict.loadToProgram()) errorOpeningFile = true;
+
+	} while (cin.fail() || errorOpeningFile);
+
+			
 	//creation of the board
 	int lines, columns;
 
