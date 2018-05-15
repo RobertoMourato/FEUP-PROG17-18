@@ -172,7 +172,7 @@ public:
 		string errorMessage = "\nThe word doesn't belong to the dictionary!\n\n";
 		map<string, vector<string>>::iterator it = wordSynonyms.begin();
 
-		for (it = wordSynonyms.begin(); it != wordSynonyms.end(); it++) {
+		for (it; it != wordSynonyms.end(); it++) {
 			if ((*it).first == word) {
 				return true;
 			}
@@ -205,7 +205,7 @@ private:
 	unsigned int lines, columns;
 	vector <vector <char> > layout; //bigger vector "lines", smaller vectors are columns
 	vector <char> newEmpty; //needed to fill the vector
-	vector <string> wordsPlaced; //to be erased
+	//vector <string> wordsPlaced; //to be erased
 	map <string, string> positionWordsPlaced; //to handle add and remove words, check on repeated words and output/input for/from files
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //console colors
 
@@ -257,7 +257,7 @@ private:
 			if (layout[column].at(line - 1) == '#') layout[column].at(line - 1) = '.';
 			else return;
 		}
-		else if (!(layout[column].at(line +1) >= 65 && layout[column].at(line + 1) <= 90)) return;
+		//else if (!(layout[column].at(line +1) >= 65 && layout[column].at(line + 1) <= 90)) return;
 
 		int i = 0;
 		while (true)
@@ -278,11 +278,12 @@ private:
 
 	void removeHorizontal(int line, int column)
 	{
-		if (0 < column) {
+	/*	if (0 < column) {
 			if (layout.at(column - 1)[line] == '#') layout.at(column - 1)[line] = '.';
 			else return;
 		}
 		else if (!(layout.at(column + 1)[line] >= 65 && layout.at(column + 1)[line] <= 90)) return;
+	*/
 		int i = 0;
 		while (true)
 		{
@@ -300,21 +301,21 @@ private:
 		}
 	}
 
-	void printInFile(fstream f) {
+	void printInFile(fstream *f) {
 		//the board
 		for (unsigned int i = 0; i < columns; i++) {
 			for (unsigned int j = 0; j < lines; i++) {
-				f << layout[i][j] << " ";
+				*f << layout[i][j] << " ";
 			}
-			cout << endl;
+			*f << endl;
 		}
 		//the position and word
-		f << endl << endl;
+		*f << endl << endl;
 		map<string, string>::iterator it = positionWordsPlaced.begin();
 
 		for (it = positionWordsPlaced.begin(); it != positionWordsPlaced.end(); it++) {
-			f << (*it).first << " " << (*it).second;
-			f << endl;
+			*f << (*it).first << " " << (*it).second;
+			*f << endl;
 		}
 	}
 
@@ -411,25 +412,28 @@ public:
 		if ('H' == direction || 'v' == direction) addHorizontal(word, lineNum, columnNum);
 
 		positionWordsPlaced[position] = word;
-		wordsPlaced.push_back(word);
+	//	wordsPlaced.push_back(word);
 	}
 
-	//alterar forma de execuçao
 	void removeWord(string position) {
 		int line = whichLine(position);
 		int column = whichColumn(position);
 		char direction = position[2];
-		//
 		// verificar se a posiçao no map é valida
 		// retirar a palavra do map
 		// retirar a palavra do board
-		//
-		if (layout[column][line] == '#' || layout[column][line] == '.') {
-			cout << "\nThere aren't any word to remove in this position\n\n";
-			return;
+		string errorMessage = "\n\nThere aren't any words to remove in that position!\n";
+		map<string, string>::iterator it = positionWordsPlaced.find(position);
+		if (it != positionWordsPlaced.end()) {
+			positionWordsPlaced.erase(it);
+			if ('V' == direction || 'v' == direction) removeVertical(line, column);
+			else if ('H' == direction || 'h' == direction) removeHorizontal(line, column);
 		}
-		if ('V' == direction || 'v' == direction) removeVertical(line, column);
-		if ('H' == direction || 'h' == direction) removeHorizontal(line, column);
+		else {
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessage;
+			SetConsoleTextAttribute(hConsole, 15);
+		}
 	}
 
 	bool checkSpace4Word(string word, string position)
@@ -517,9 +521,10 @@ public:
 		//
 		//implementar o loop para correr o map e verificar se a palavra ja foi usada 
 		//
-		for (unsigned int i = 0; i < wordsPlaced.size(); i++)
-			if (word == wordsPlaced[i])
-			{
+		map<string, string>::iterator it = positionWordsPlaced.begin();
+
+		for (it; it != positionWordsPlaced.end(); it++)
+			if (it->second == word) {
 				cout << errorMessage;
 				return false;
 			}
@@ -589,6 +594,7 @@ public:
 		string fileOutput, docType;
 		bool existingFile;
 		fstream f;
+		fstream *fA = &f;
 		do {
 			n++;
 			fileOutput = "b";
@@ -609,9 +615,8 @@ public:
 			}
 		} while (existingFile);
 
-		printInFile(f);
-
-
+		printInFile(fA);
+		cout << "The extraction was successfully made to " << fileOutput << " file!";
 	}
 };
 
@@ -630,7 +635,6 @@ bool checkValidity(Dict *dictP, Board *boardP, string word, string position)
 	if (!boardP->checkSpace4Word(word, position)) return false;
 	return true;
 }
-
 
 void helpInsertWord(string position, Board *boardP, Dict *dictP) {
 	bool repeatNoMatchingWords = true;
@@ -716,15 +720,6 @@ void helpInsertWord(string position, Board *boardP, Dict *dictP) {
 			cout << "\n\nChoose one of them to add to the board [CTRL-Z if you want to cancel help]: ";
 			bool wordMatchesVector;
 			string answer;
-		//	cin >> answer;
-		//	for (unsigned int i = 0; i < resultWord.size(); i++)
-		//		if (resultWord[i] == answer) {
-		//			wordMatchesVector = true; 
-		//			break;
-		//		}
-		//	if (cin.eof()) {
-		//		cin.clear(); cout << returnMessage;  return;
-		//	}
 			do {
 				cin.clear();
 				wordMatchesVector = false;
@@ -825,7 +820,7 @@ void puzzleCreate()
 
 	} 
 	if (allWordsValidity()) {
-		cout << "All words are valid, the extraction will continue";
+		cout << "\nAll words are valid, the extraction will continue\n";
 		//board.extraction();
 	}
 	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
@@ -833,12 +828,6 @@ void puzzleCreate()
 	//ou prosseguir com a extraçao
 
 }	
-
-/*
-void wordsTest()
-{
-
-} */
 
 int main()
 {
@@ -870,6 +859,11 @@ int main()
 		while(true) {
 			cout << "Option ? ";
 			cin >> chosenOption;
+			if (cin.eof()) {
+				cin.clear();
+				cin.ignore(1000, '\n');
+				continue;
+			}
 			if ("0" == chosenOption) return 0;
 			if ("1" == chosenOption) {
 				puzzleCreate();
