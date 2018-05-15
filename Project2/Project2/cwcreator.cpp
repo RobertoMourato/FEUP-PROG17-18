@@ -171,7 +171,7 @@ public:
 	bool headlineExists(string word) 
 	{
 		SetConsoleTextAttribute(hConsole, 244);
-		string errorMessage = "\nThe word doesn't belong to the dictionary!\n\n";
+		string errorMessage = "\nThe word doesn't belong in the dictionary!\n\n";
 		map<string, vector<string>>::iterator it = wordSynonyms.begin();
 
 		for (it; it != wordSynonyms.end(); it++) {
@@ -580,6 +580,57 @@ public:
 			}				
 	}
 
+	vector<string> verifyHorizontal() {
+		
+		vector<string> palavras;
+		string palavra;
+
+		for (unsigned int i = 0; i < layout[0].size(); i++) {
+			for (unsigned int k = 0; k < layout.size(); k++) {
+				if (layout[k][i] > 64 && layout[k][i] < 91) {
+					palavra += layout[k][i];
+				}
+				else if (k == 0) {
+					continue;
+				}
+				else if (layout[k - 1][i] > 64 && layout[k - 1][i] < 91) {
+					palavras.push_back(palavra);
+					string palavra;
+				}
+			}
+			if (palavra.size() != 0) {
+				palavras.push_back(palavra);
+				string palavra;
+			}
+		}
+		return palavras;
+	}
+
+	vector<string> verifyVertical() {
+		vector<string> palavras;
+		string palavra1;
+
+		for (unsigned int i = 0; i < layout.size(); i++) {
+			for (unsigned int k = 0; k < layout[0].size(); k++) {
+				if (layout[i][k] > 64 && layout[i][k] < 91) {
+					palavra1 += layout[i][k];
+				}
+				else if (k == 0) {
+					continue;
+				}
+				else if (layout[i][k - 1] > 64 && layout[i][k - 1] < 91) {
+					palavras.push_back(palavra1);
+					string palavra1;
+				}
+			}
+			if (palavra1.size() != 0) {
+				palavras.push_back(palavra1);
+				string palavra1;
+			}
+		}
+		return palavras;
+	}
+
 	void extraction() {
 		int n = -1;
 		string fileOutput, docType;
@@ -612,7 +663,29 @@ public:
 };
 
 //vvvvvvvvvvvv TO BE MADE
-bool allWordsValidity() {
+bool allWordsValidity(Board *boardP, Dict *dictP) {
+	vector<string> verticalWords = boardP->verifyVertical();
+	vector<string> horizontalWords = boardP->verifyHorizontal();
+	string errorMessageHeadline = "\nThe word %s is not a valid word in the dictionary\n";
+
+	for (unsigned int i = 0; i < verticalWords.size(); i++)
+	{
+		if (!dictP->headlineExists(verticalWords[i])) {
+			SetConsoleTextAttribute(hConsole, 244);
+			printf(errorMessageHeadline.c_str(), verticalWords[i].c_str());
+			SetConsoleTextAttribute(hConsole, 15);
+			return false;
+		}
+	}
+	for (unsigned int i = 0; i < horizontalWords.size(); i++)
+	{
+		if (!dictP->headlineExists(horizontalWords[i])) {
+			SetConsoleTextAttribute(hConsole, 244);
+			printf(errorMessageHeadline.c_str(), verticalWords[i].c_str());
+			SetConsoleTextAttribute(hConsole, 15);
+			return false;
+		}
+	}
 	return true;
 }
  
@@ -834,10 +907,11 @@ void puzzleCreate()
 		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
 
 	} 
-	if (allWordsValidity()) {
+	if (allWordsValidity(boardA, dictA)) {
 		cout << "\nAll words are valid, the extraction will continue\n";
 		//board.extraction();
 	}
+	else cout << "\nwhat to do?\n";
 	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
 	//perguntar ao utilizador se quer continuar caso haja erro
 	//ou prosseguir com a extraçao
