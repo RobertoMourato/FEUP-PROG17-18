@@ -1,19 +1,2 @@
-﻿  cwcreator.cpp
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(705): error C2601: 'helpInsertWord': definições de função local são inválidas
-  d:\feup\prog\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(704): note: esta linha contém um '{' que ainda não foi correspondido
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(817): error C2601: 'puzzleCreate': definições de função local são inválidas
-  d:\feup\prog\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(704): note: esta linha contém um '{' que ainda não foi correspondido
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(924): error C2601: 'main': definições de função local são inválidas
-  d:\feup\prog\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(704): note: esta linha contém um '{' que ainda não foi correspondido
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(704): fatal error C1075: '{': nenhum token correspondente encontrado
-  Dictionary.cpp
-  Tabuleiro.cpp
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\tabuleiro.cpp(35): error C2059: erro de sintaxe: ';'
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\tabuleiro.cpp(35): error C2059: erro de sintaxe: ')'
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\tabuleiro.cpp(36): error C2059: erro de sintaxe: 'for'
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\tabuleiro.cpp(36): error C2143: erro de sintaxe: ')' ausente antes de ';'
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\tabuleiro.cpp(36): error C2065: 'k': identificador não declarado
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\tabuleiro.cpp(39): error C2059: erro de sintaxe: '}'
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\tabuleiro.cpp(46): error C2059: erro de sintaxe: '}'
-d:\feup\prog\projetoprogmmxvii-i\project2\project2\tabuleiro.cpp(46): error C2143: erro de sintaxe: ';' ausente antes de '}'
-  Gerando Código...
+﻿  Board.cpp
+  Project2.vcxproj -> D:\FEUP\PROG\ProjetoProgMMXVII-I\Project2\Debug\Project2.exe
