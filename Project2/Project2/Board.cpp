@@ -14,7 +14,7 @@ Board::~Board()
 }
 
 
-/* bool Tabuleiro::ResumeBoard() {
+/* bool Board::ResumeBoard() {
 	cout << "File Name ?\n";
 	string input, line;
 	cin >> input;
@@ -142,8 +142,11 @@ void Board::removeHorizontal(int line, int column)
 	}
 }
 
-void Board::printInFile(fstream *f)
+void Board::printInFile(fstream *f, string fileName)
 {
+	//name and space
+	*f << fileName << endl << endl;
+
 	//the board
 	for (unsigned int i = 0; i < columns; i++) {
 		for (unsigned int j = 0; j < lines; i++) {
@@ -360,19 +363,24 @@ bool Board::checkSpace4Word(string word, string position)
 	return true;
 }
 
-//implementar o loop no map em vez de no vector
 bool Board::unusedWord(string word)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, 244);
 	string errorMessage = "\nThe word was already used!\n\n";
-	map<string, string>::iterator it = positionWordsPlaced.begin();
+	map<string, string>::iterator it;
 
-	for (it; it != positionWordsPlaced.end(); it++)
+	it = positionWordsPlaced.find(word);
+	if (it != positionWordsPlaced.end()) {
+		cout << errorMessage;
+		return false;
+	}
+
+	/*for (it; it != positionWordsPlaced.end(); it++)
 		if (it->second == word) {
 			cout << errorMessage;
 			return false;
-		}
+		}*/
 	return true;
 }
 
@@ -449,7 +457,7 @@ vector<string> Board::verifyHorizontal()
 		}
 		if (palavra.size() != 0) {
 			palavras.push_back(palavra);
-			string palavra;
+			string palavra = "";
 		}
 	}
 	return palavras;
@@ -458,24 +466,24 @@ vector<string> Board::verifyHorizontal()
 vector<string> Board::verifyVertical()
 {
 	vector<string> palavras;
-	string palavra1;
+	string palavra;
 
 	for (unsigned int i = 0; i < layout.size(); i++) {
 		for (unsigned int k = 0; k < layout[0].size(); k++) {
 			if (layout[i][k] > 64 && layout[i][k] < 91) {
-				palavra1 += layout[i][k];
+				palavra += layout[i][k];
 			}
 			else if (k == 0) {
 				continue;
 			}
 			else if (layout[i][k - 1] > 64 && layout[i][k - 1] < 91) {
-				palavras.push_back(palavra1);
+				palavras.push_back(palavra);
 				string palavra1;
 			}
 		}
-		if (palavra1.size() != 0) {
-			palavras.push_back(palavra1);
-			string palavra1;
+		if (palavra.size() != 0) {
+			palavras.push_back(palavra);
+			string palavra = "";
 		}
 	}
 	return palavras;
@@ -508,6 +516,14 @@ void Board::extraction()
 		}
 	} while (existingFile);
 
-	printInFile(fA);
+	printInFile(fA, fileOutput);
 	cout << "The extraction was successfully made to " << fileOutput << " file!";
+	f.close();
+}
+
+void Board::hashtagFill() {
+	for (unsigned int i = 0; i < columns; i++)
+		for (unsigned int j = 0; j < lines; j++)
+			if (layout[i][j] == '.')
+				layout[i][j] = '#';
 }

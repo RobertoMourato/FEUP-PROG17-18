@@ -29,7 +29,7 @@ bool allWordsValidity(Board *boardP, Dictionary *dictP) {
 	{
 		if (!dictP->headlineExists(horizontalWords[i])) {
 			SetConsoleTextAttribute(hConsole, 244);
-			printf(errorMessageHeadline.c_str(), verticalWords[i].c_str());
+			printf(errorMessageHeadline.c_str(), horizontalWords[i].c_str());
 			SetConsoleTextAttribute(hConsole, 15);
 			return false;
 		}
@@ -48,7 +48,7 @@ bool checkValidity(Dictionary *dictP, Board *boardP, string word, string positio
 	return true;
 }
 
-void helpInsertWord(string position, Board *boardP, Dictionary *dictP);
+//void helpInsertWord(string position, Board *boardP, Dictionary *dictP);
 void helpInsertWord(string position, Board *boardP, Dictionary *dictP) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	bool repeatNoMatchingWords = true;
@@ -258,11 +258,45 @@ void puzzleCreate()
 		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
 
 	} 
-	if (allWordsValidity(boardA, dictA)) {
-		cout << "\nAll words are valid, the extraction will continue\n";
-		//board.extraction();
+
+	bool finishedBoard, errorInput;
+	
+	
+	do {
+		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+		errorInput = false;
+		cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+		cin >> finishedBoard;
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageResume;
+			SetConsoleTextAttribute(hConsole, 15);
+			errorInput = true;
+		}
+
+		if (cin.eof()) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			errorInput = true;
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageResume;
+			SetConsoleTextAttribute(hConsole, 15);
+		}
+	} while (errorInput);
+
+	if (finishedBoard) {
+		board.hashtagFill();
+		bool validity = allWordsValidity(boardA, dictA);
+		// << "\nThe extraction will continue\n";
+		board.extraction();
+
 	}
-	else cout << "\nwhat to do?\n";
+	else {
+		board.extraction();
+	}
+	//else cout << "\nwhat to do?\n";
 	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
 	//perguntar ao utilizador se quer continuar caso haja erro
 	//ou prosseguir com a extraçao

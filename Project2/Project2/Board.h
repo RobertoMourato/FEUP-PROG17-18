@@ -20,12 +20,14 @@ private:
 	map <string, string> positionWordsPlaced; //to handle add and remove words, check on repeated words and output/input for/from files
 	
 public:
-	
-	//Board();
 	~Board();
 
-	//bool ResumeBoard();
+	Board();
 
+	Board(unsigned int lines, unsigned int columns);
+
+	//bool ResumeBoard();  //bool???
+	
 	void addVertical(string word, int line, int column);
 
 	void addHorizontal(string word, int line, int column);
@@ -38,11 +40,9 @@ public:
 
 	void removeHorizontal(int line, int column);
 
-	void printInFile(fstream *f);
+	void printInFile(fstream *f, string fileName);
 
-	Board();
 
-	Board(unsigned int lines, unsigned int columns);
 	
 	void pointFill();
 
@@ -69,5 +69,7 @@ public:
 	vector<string> verifyVertical();
 
 	void extraction();
+
+	void hashtagFill();
 };
 

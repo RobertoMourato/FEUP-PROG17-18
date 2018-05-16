@@ -42,7 +42,7 @@ string Dictionary::singleWord(string &Line) //retirar a proxima palavra da linha
 	return singleWord;
 }
 
-bool  Dictionary::validLine(string Line)
+bool Dictionary::validLine(string Line)
 {
 	//check if a line is valid by comparing char by char, so lines with [] and {} are ignored
 	for (unsigned int i = 0; i < Line.size(); i++)
@@ -167,11 +167,16 @@ bool Dictionary::headlineExists(string word)
 	SetConsoleTextAttribute(hConsole, 244);
 	string errorMessage = "\nThe word doesn't belong in the dictionary!\n\n";
 	map<string, vector<string>>::iterator it = wordSynonyms.begin();
-
+	/*
 	for (it; it != wordSynonyms.end(); it++) {
 		if ((*it).first == word) {
 			return true;
 		}
+	}*/
+
+	it = wordSynonyms.find(word);
+	if (it != wordSynonyms.end()) {
+		return true;
 	}
 	cout << errorMessage;
 	return false;
