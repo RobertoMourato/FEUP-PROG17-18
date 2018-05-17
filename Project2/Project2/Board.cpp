@@ -222,7 +222,6 @@ void Board::addWord(string word, string position)
 	if ('H' == direction || 'v' == direction) addHorizontal(word, lineNum, columnNum);
 
 	positionWordsPlaced[position] = word;
-	//	wordsPlaced.push_back(word);
 }
 
 void Board::removeWord(string position)
@@ -331,19 +330,14 @@ bool Board::unusedWord(string word)
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, 244);
 	string errorMessage = "\nThe word was already used!\n\n";
-	map<string, string>::iterator it;
+	map<string, string>::iterator it = positionWordsPlaced.begin();
 
-	it = positionWordsPlaced.find(word);
-	if (it != positionWordsPlaced.end()) {
-		cout << errorMessage;
-		return false;
-	}
-
-	/*for (it; it != positionWordsPlaced.end(); it++)
+	for (it; it != positionWordsPlaced.end(); it++) {
 		if (it->second == word) {
 			cout << errorMessage;
 			return false;
-		}*/
+		}
+	}
 	return true;
 }
 
@@ -479,7 +473,6 @@ void Board::extraction()
 		if (n < 10) fileOutput += "00" + to_string(n) + docType;
 		else if (n < 100) fileOutput += "0" + to_string(n) + docType;
 		else fileOutput += to_string(n) + docType;
-		std::cout << fileOutput;
 
 		f.open(fileOutput);
 		if (f.is_open()) {
@@ -496,9 +489,60 @@ void Board::extraction()
 	f.close();
 }
 
-void Board::hashtagFill() {
+void Board::hashtagFill()
+{
 	for (unsigned int i = 0; i < columns; i++)
 		for (unsigned int j = 0; j < lines; j++)
 			if (layout[i][j] == '.')
 				layout[i][j] = '#';
+}
+
+void Board::loadFromFile(fstream *f) 
+{
+	string line; //complete lines
+	string word, position;
+	getline(*f, line); //first line
+	getline(*f, line); //second line, blank
+	getline(*f, line); //first board 
+	lines = line.size() / 2; //number of board lines
+	int i = 0; //columns counter
+	while (getline(*f, line))
+	{
+		i++; //counter
+		if (line.empty()) break; //when it reaches the line under the grid, pull out
+	}
+	columns = i; //columns definition
+	pointFill(); //fill the vector with points
+
+	while (!f->eof())
+	{
+		*f >> position >> word; //input of position and word from file
+		addWord(word, position); //as they already were verified, add the word automatically
+	}
+
+
+}
+
+void Board::reExtraction(string outputFile)
+{
+	fstream f;
+	fstream *fA = &f;
+	
+	f.open(outputFile);
+
+	printInFile(fA, outputFile);
+	cout << "The extraction was successfully made to " << outputFile << " file!";
+	f.close();
+}
+
+void Board::showmap()
+{
+	map<string, string>::iterator it = positionWordsPlaced.begin();
+	cout << endl;
+
+	for (it; it != positionWordsPlaced.end(); it++)
+	{
+		cout << it->first << " " << it->second << endl;
+	}
+	cout << endl;
 }

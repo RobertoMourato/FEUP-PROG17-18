@@ -16,7 +16,6 @@ private:
 	unsigned int lines, columns;
 	vector <vector <char> > layout; //bigger vector "lines", smaller vectors are columns
 	vector <char> newEmpty; //needed to fill the vector
-							//vector <string> wordsPlaced; //to be erased
 	map <string, string> positionWordsPlaced; //to handle add and remove words, check on repeated words and output/input for/from files
 	
 public:
@@ -42,7 +41,7 @@ public:
 
 	void printInFile(fstream *f, string fileName);
 
-
+	void loadFromFile(fstream *f);
 	
 	void pointFill();
 
@@ -71,5 +70,8 @@ public:
 	void extraction();
 
 	void hashtagFill();
-};
 
+	void reExtraction(string outputFile);
+
+	void showmap();
+};

@@ -10,7 +10,6 @@
 #include"Player.h"
 using namespace std;
 
-//vvvvvvvvvvvv TO BE MADE
 bool allWordsValidity(Board *boardP, Dictionary *dictP) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	vector<string> verticalWords = boardP->verifyVertical();
@@ -43,13 +42,11 @@ bool checkValidity(Dictionary *dictP, Board *boardP, string word, string positio
 	//check the existance of the word
 	if (!dictP->headlineExists(word)) return false;
 
-//	if (!boardP->clearSpace4Word(word.size(), lineNum, columnNum, direction)) return false;
 	if (!boardP->unusedWord(word)) return false;
 	if (!boardP->checkSpace4Word(word, position)) return false;
 	return true;
 }
 
-//void helpInsertWord(string position, Board *boardP, Dictionary *dictP);
 void helpInsertWord(string position, Board *boardP, Dictionary *dictP) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	bool repeatNoMatchingWords = true;
@@ -306,6 +303,7 @@ void puzzleCreate()
 
 void puzzleResume() {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	string inputFile;
 	//dictionary creation and extraction
 	Dictionary dict;
 	Dictionary *dictA = &dict;
@@ -336,11 +334,12 @@ void puzzleResume() {
 	} while (cin.fail() || errorOpeningFile);
 
 	fstream f;
-
+	fstream *fA = &f;
+	
 	do {
 		cin.clear();
 		errorOpeningFile = false;
-		string inputFile, errorMessageFileInput = "That input is not valid! Try again\n";
+		string errorMessageFileInput = "That input is not valid! Try again\n";
 		string errorMessageOpeningFile = "It was not possible to open the %s file";
 		cout << "File name?\n";
 		cin >> inputFile;
@@ -367,11 +366,88 @@ void puzzleResume() {
 		}
 	} while (cin.fail() || errorOpeningFile);
 
-	//dicionario sacado
-	//file da board aberto
-	//fazer o resto
-
 	Board board;
+	Board *boardA = &board; 
+
+	board.loadFromFile(fA);
+	f.close();
+
+	board.showmap();
+
+	//loop to fill in the board
+	string position, word;
+	while (true) {
+		board.showmap();
+		board.show(); //show the board
+					  //the user choose what to do
+		cout << "Position ( LCD / CTRL-Z = stop ) ? "; cin >> position; //<======================= tornar mais robusto
+		if (cin.eof()) { cin.clear(); break; } //CTRL-Z to get out of the loop
+
+		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
+		if (cin.eof()) { cin.clear(); continue; }
+		transform(word.begin(), word.end(), word.begin(), ::toupper); //upper case the word
+
+																	  //check if position input is correct
+		if (!board.validPosition(position)) {
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << "That position is not valid... Try Again!\n";
+			SetConsoleTextAttribute(hConsole, 15);
+		}
+		//to remove a word
+		else if ("-" == word) {
+			board.removeWord(position);
+		}
+		//to help the user
+		else if ("?" == word) {
+			helpInsertWord(position, boardA, dictA);
+		}
+		//to add the respective word
+		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
+
+	}
+
+	bool finishedBoard, errorInput;
+
+
+	do {
+		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+		errorInput = false;
+		cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+		cin >> finishedBoard;
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageResume;
+			SetConsoleTextAttribute(hConsole, 15);
+			errorInput = true;
+		}
+
+		if (cin.eof()) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			errorInput = true;
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageResume;
+			SetConsoleTextAttribute(hConsole, 15);
+		}
+	} while (errorInput);
+
+	if (finishedBoard) {
+		board.hashtagFill();
+		bool validity = allWordsValidity(boardA, dictA);
+		//cout << "\nThe extraction will continue\n";
+		board.reExtraction(inputFile);
+
+	}
+	else {
+		board.reExtraction(inputFile);
+	}
+	//else cout << "\nwhat to do?\n";
+	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
+	//perguntar ao utilizador se quer continuar caso haja erro
+	//ou prosseguir com a extraçao
+
 }
 
 /* bool Board::ResumeBoard() {
@@ -442,11 +518,16 @@ int main()
 				continue;
 			}
 			if ("0" == chosenOption) return 0;
-			if ("1" == chosenOption) {
+			if ("1" == chosenOption)
+			{
 				puzzleCreate();
 				break;
 			}
-			//if ("2" == chosenOption) { puzzleResume(); break; }
+			if ("2" == chosenOption) 
+			{ 
+				puzzleResume();
+				break; 
+			}
 		} 
 	}
 }
