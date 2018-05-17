@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include"Dictionary.h"
 #include"Board.h"
+#include"Player.h"
 using namespace std;
 
 //vvvvvvvvvvvv TO BE MADE
