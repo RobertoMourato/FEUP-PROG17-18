@@ -219,7 +219,7 @@ void Board::addWord(string word, string position)
 	char direction = position[2];
 
 	if ('V' == direction || 'v' == direction) addVertical(word, lineNum, columnNum);
-	if ('H' == direction || 'v' == direction) addHorizontal(word, lineNum, columnNum);
+	if ('H' == direction || 'h' == direction) addHorizontal(word, lineNum, columnNum);
 
 	positionWordsPlaced[position] = word;
 }
