@@ -27,7 +27,8 @@ string Dictionary::singleWord(string &Line) //retirar a proxima palavra da linha
 							  //place where the delimiter will be
 							  //check if the first char is a letter
 							  //and if not cut the chars till we reach a letter, and then, a word
-	while (!((Line[0] >= 65 && Line[0] <= 90) || (Line[0] >= 97 && Line[0] <= 122))) {
+	while (!((Line[0] >= 65 && Line[0] <= 90) || (Line[0] >= 97 && Line[0] <= 122)))
+	{
 		Line.erase(0, 1);
 		//cout << ".\n";
 	}
@@ -123,22 +124,27 @@ bool Dictionary::loadToProgram()
 	cout << "loading...\n";
 	//do while aqui
 	//first line, except lines with "[ (...) ]"
-	do {
+	do
+	{
 		getline(f, completeLine);
 	} while (!validLine(completeLine));
 
 	//line and headline analysis
-	while (!f.eof()) {
+	while (!f.eof()) 
+	{
 		vector <string> synonyms;
-		while (completeLine != "\0") {
-			if (isHeadline(completeLine)) {
+		while (completeLine != "\0") 
+		{
+			if (isHeadline(completeLine)) 
+			{
 				//i++;
 				//wordSynonyms.push_back(newEmptyVector);
 				//wordSynonyms[i].push_back(singleWord(completeLine));
 				headline = singleWord(completeLine);
 				transform(headline.begin(), headline.end(), headline.begin(), ::toupper); //->uppercase
 			}
-			else {
+			else 
+			{
 				//wordSynonyms[i].push_back(singleWord(completeLine)); 
 				word = singleWord(completeLine);
 				transform(word.begin(), word.end(), word.begin(), ::toupper); //->uppercase
@@ -152,7 +158,8 @@ bool Dictionary::loadToProgram()
 		wordSynonyms[headline] = synonyms;
 
 		//next line
-		do {
+		do 
+		{
 			getline(f, completeLine);
 		} while (!validLine(completeLine));
 	}
@@ -175,7 +182,8 @@ bool Dictionary::headlineExists(string word)
 	}*/
 
 	it = wordSynonyms.find(word);
-	if (it != wordSynonyms.end()) {
+	if (it != wordSynonyms.end()) 
+	{
 		return true;
 	}
 	cout << errorMessage;
@@ -188,9 +196,11 @@ vector<string> Dictionary::matchingWords(string wildCard)
 	map<string, vector<string>>::iterator it = wordSynonyms.begin();
 	int maxNumber = 10;
 
-	for (it = wordSynonyms.begin(); it != wordSynonyms.end(); it++) {
+	for (it = wordSynonyms.begin(); it != wordSynonyms.end(); it++) 
+	{
 		if (maxNumber == 0) break;
-		if (wildcardMatch(it->first.c_str(), wildCard.c_str())) {
+		if (wildcardMatch(it->first.c_str(), wildCard.c_str())) 
+		{
 			resultWord.push_back(it->first);
 			maxNumber--;
 		}
