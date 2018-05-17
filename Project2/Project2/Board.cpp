@@ -10,44 +10,7 @@
 
 Board::~Board()
 {
-	
 }
-
-
-/* bool Board::ResumeBoard() {
-	cout << "File Name ?\n";
-	string input, line;
-	cin >> input;
-	ifstream f;
-	f.open((input + ".txt").c_str());
-
-	if (!f.is_open()) {
-
-		return false;
-		
-	}
-	else {
-
-		getline(f, line, '\n');
-		getline(f, line, '\n');
-		
-		while (getline(f, line, '\n')) {
-			if (line.empty()) {
-				break;
-			}
-			for (int i = 0; i < ; i++) {
-				for (int k =0; k < line.
-
-
-			}
-
-		}
-	}
-
-
-	
-}
-*/
 
 void Board::addVertical(string word, int line, int column)
 {
@@ -148,15 +111,15 @@ void Board::printInFile(fstream *f, string fileName)
 	*f << fileName << endl << endl;
 
 	//the board
-	for (unsigned int i = 0; i < columns; i++) {
-		for (unsigned int j = 0; j < lines; i++) {
+	for (unsigned int j = 0; j < lines; j++) {
+		for (unsigned int i = 0; i < columns; i++) {
 			*f << layout[i][j] << " ";
 		}
 		*f << endl;
 	}
 	//the position and word
-	*f << endl << endl;
-	map<string, string>::iterator it = positionWordsPlaced.begin();
+	*f << endl;
+	map<string, string>::iterator it;
 
 	for (it = positionWordsPlaced.begin(); it != positionWordsPlaced.end(); it++) {
 		*f << (*it).first << " " << (*it).second;
@@ -450,14 +413,20 @@ vector<string> Board::verifyHorizontal()
 			else if (k == 0) {
 				continue;
 			}
+			else if (palavra.size() == 1) {
+				palavra = "";
+			}
 			else if (layout[k - 1][i] > 64 && layout[k - 1][i] < 91) {
 				palavras.push_back(palavra);
-				string palavra;
+				palavra = "";
 			}
+		}
+		if (palavra.size() == 1) {
+			palavra = "";
 		}
 		if (palavra.size() != 0) {
 			palavras.push_back(palavra);
-			string palavra = "";
+			palavra = "";
 		}
 	}
 	return palavras;
@@ -476,14 +445,20 @@ vector<string> Board::verifyVertical()
 			else if (k == 0) {
 				continue;
 			}
+			else if (palavra.size() == 1) {
+				palavra = "";
+			}
 			else if (layout[i][k - 1] > 64 && layout[i][k - 1] < 91) {
 				palavras.push_back(palavra);
-				string palavra1;
+				palavra = "";
 			}
 		}
-		if (palavra.size() != 0) {
+		if (palavra.size() == 1) {
+			palavra = "";
+		}
+		else if (palavra.size() != 0) {
 			palavras.push_back(palavra);
-			string palavra = "";
+			palavra = "";
 		}
 	}
 	return palavras;

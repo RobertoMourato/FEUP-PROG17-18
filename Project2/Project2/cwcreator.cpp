@@ -88,10 +88,10 @@ void helpInsertWord(string position, Board *boardP, Dictionary *dictP) {
 			}
 			
 			SetConsoleTextAttribute(hConsole, 15);
-			//word with the asked size
+			//word creation with the asked size
 			for (int i = 0; i < lettersNumber; i++)
 				wordToCreate += "?";
-			//is there any space available?
+																																																																																																																																																																																																																																																																																						//is there any space available?
 			if (!boardP->checkSpace4Word(wordToCreate, position)) errorInWordSize = true;
 		} while (errorInput || errorInWordSize);
 
@@ -289,7 +289,7 @@ void puzzleCreate()
 	if (finishedBoard) {
 		board.hashtagFill();
 		bool validity = allWordsValidity(boardA, dictA);
-		// << "\nThe extraction will continue\n";
+		//cout << "\nThe extraction will continue\n";
 		board.extraction();
 
 	}
@@ -302,6 +302,108 @@ void puzzleCreate()
 	//ou prosseguir com a extraçao
 
 }	
+
+void puzzleResume() {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	//dictionary creation and extraction
+	Dictionary dict;
+	Dictionary *dictA = &dict;
+	bool errorOpeningFile;
+	do {
+		errorOpeningFile = false;
+		cin.clear();
+		string errorMessageFileInput = "That input is not valid! Try again\n";
+		cout << "Dictionary file name ? ";
+		cin >> dict.fileNameInput;
+		if (cin.fail()) {
+			cin.ignore(1000000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageFileInput;
+			SetConsoleTextAttribute(hConsole, 15);
+			continue;
+		}
+		if (cin.eof())
+		{
+			cin.ignore(100, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageFileInput;
+			SetConsoleTextAttribute(hConsole, 15);
+			continue;
+		}
+		if (!dict.loadToProgram()) errorOpeningFile = true;
+
+	} while (cin.fail() || errorOpeningFile);
+
+	fstream f;
+
+	do {
+		cin.clear();
+		errorOpeningFile = false;
+		string inputFile, errorMessageFileInput = "That input is not valid! Try again\n";
+		string errorMessageOpeningFile = "It was not possible to open the %s file";
+		cout << "File name?\n";
+		cin >> inputFile;
+		if (cin.fail()) {
+			cin.ignore(1000000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageFileInput;
+			SetConsoleTextAttribute(hConsole, 15);
+			continue;
+		}
+		if (cin.eof()) {
+			cin.ignore(100, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageFileInput;
+			SetConsoleTextAttribute(hConsole, 15);
+			continue;
+		}
+		f.open(inputFile);
+		if (!f.is_open()) {
+			SetConsoleTextAttribute(hConsole, 244);
+			printf(errorMessageOpeningFile.c_str(), inputFile.c_str());
+			SetConsoleTextAttribute(hConsole, 15);
+			errorOpeningFile = true;
+		}
+	} while (cin.fail() || errorOpeningFile);
+
+	//dicionario sacado
+	//file da board aberto
+	//fazer o resto
+
+	Board board;
+}
+
+/* bool Board::ResumeBoard() {
+cout << "File Name ?\n";
+string input, line;
+cin >> input;
+ifstream f;
+f.open((input + ".txt").c_str());
+
+if (!f.is_open()) {
+
+return false;
+
+}
+else {
+
+getline(f, line, '\n');
+getline(f, line, '\n');
+
+while (getline(f, line, '\n')) {
+if (line.empty()) {
+break;
+}
+for (int i = 0; i < ; i++) {
+for (int k =0; k < line.
+
+
+}
+
+}
+}
+}
+*/
 
 int main()
 {
