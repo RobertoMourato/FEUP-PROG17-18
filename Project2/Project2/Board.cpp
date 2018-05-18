@@ -63,9 +63,14 @@ bool Board::crossedWordsHorizontal(unsigned int column, unsigned int line)
 
 void Board::removeVertical(int line, int column)
 {
-	if (0 < line) {
-		if (layout[column].at(line - 1) == '#') layout[column].at(line - 1) = '.';
-		else return;
+	if (0 < line) 
+	{
+		if (!crossedWordsVertical(column, line - 1))
+		{
+		    if (layout[column].at(line - 1) == '#') layout[column].at(line - 1) = '.';
+			else return;
+		}
+		
 	}
 
 	int i = 0;
@@ -74,10 +79,15 @@ void Board::removeVertical(int line, int column)
 		if (line + i == lines) return;
 		if (layout[column][line + i] == '#')
 		{
-			layout[column][line + i] = '.';
+			if (!crossedWordsVertical(column, line - 1) || (!crossedWordsHorizontal(column, line -1)))
+			{
+				layout[column][line + i] = '.';
+				
+			}
 			return;
 		}
-		if (crossedWordsVertical(column, line + i)) {
+		if (crossedWordsVertical(column, line + i) || (!crossedWordsHorizontal(column, line +i)))
+		{
 			i++; continue;
 		}
 		else layout[column][line + i] = '.';
@@ -87,7 +97,9 @@ void Board::removeVertical(int line, int column)
 
 void Board::removeHorizontal(int line, int column)
 {
-	if (0 < column) {
+	if (0 < column)
+	{
+		if (!crossedWordsHorizontal(column - 1, line) || (!crossedWordsVertical(column - 1, line)))
 		if (layout.at(column - 1)[line] == '#') layout.at(column - 1)[line] = '.';
 		else return;
 	}
@@ -101,7 +113,8 @@ void Board::removeHorizontal(int line, int column)
 			layout[column + i][line] = '.';
 			return;
 		}
-		if (crossedWordsHorizontal(column + i, line)) {
+		if (!crossedWordsHorizontal(column + i, line) || (!crossedWordsVertical(column + i, line)))
+		{
 			i++; continue;
 		}
 		else layout[column + i][line] = '.';
