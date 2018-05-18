@@ -415,6 +415,7 @@ void puzzleCreate()
 
 	//loop to fill in the board
 	string position, word;
+
 	while (true)
 	{
 		board.show(); //show the board
@@ -433,7 +434,7 @@ void puzzleCreate()
 		transform(word.begin(), word.end(), word.begin(), ::toupper); //upper case the word
 
 																	  
-		if (!board.validPosition(position))                     //check if position input is correct
+		if ((position.size() != 3) || (!board.validPosition(position)))                    //check if position input is correct
 		{
 			SetConsoleTextAttribute(hConsole, 244);
 			cout << "That position is not valid... \nTry Again!\n";
