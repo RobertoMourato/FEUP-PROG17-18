@@ -1,10 +1,3 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <map>
-#include <algorithm>
-#include <Windows.h>
 #include"Dictionary.h"
 #include"Board.h"
 #include"Player.h"
@@ -412,13 +405,11 @@ void puzzleResume()
 	board.loadFromFile(fA);
 	f.close();
 
-	board.showmap();
 
 	//loop to fill in the board
 	string position, word;
 	while (true) 
 	{
-		board.showmap();
 		board.show(); //show the board
 					  //the user choose what to do
 		cout << "Position ( LCD / CTRL-Z = stop ) ? "; cin >> position; //<======================= tornar mais robusto

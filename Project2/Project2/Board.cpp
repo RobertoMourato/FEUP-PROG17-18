@@ -539,15 +539,3 @@ void Board::reExtraction(string outputFile)
 	cout << "The extraction was successfully made to " << outputFile << " file!";
 	f.close();
 }
-
-void Board::showmap()
-{
-	map<string, string>::iterator it = positionWordsPlaced.begin();
-	cout << endl;
-
-	for (it; it != positionWordsPlaced.end(); it++)
-	{
-		cout << it->first << " " << it->second << endl;
-	}
-	cout << endl;
-}
