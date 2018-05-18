@@ -8,6 +8,7 @@
 #include"Dictionary.h"
 #include"Board.h"
 #include"Player.h"
+
 using namespace std;
 
 bool allWordsValidity(Board *boardP, Dictionary *dictP)
@@ -501,7 +502,6 @@ void puzzleResume()
 	//ou prosseguir com a extraçao
 
 }
-
 
 int main()
 {

@@ -5,11 +5,9 @@ Dictionary::Dictionary()
 {
 }
 
-
 Dictionary::~Dictionary()
 {
 }
-
 
 bool Dictionary::isHeadline(string line)
 {
@@ -174,12 +172,6 @@ bool Dictionary::headlineExists(string word)
 	SetConsoleTextAttribute(hConsole, 244);
 	string errorMessage = "\nThe word doesn't belong in the dictionary!\n\n";
 	map<string, vector<string>>::iterator it = wordSynonyms.begin();
-	/*
-	for (it; it != wordSynonyms.end(); it++) {
-		if ((*it).first == word) {
-			return true;
-		}
-	}*/
 
 	it = wordSynonyms.find(word);
 	if (it != wordSynonyms.end()) 
@@ -207,4 +199,3 @@ vector<string> Dictionary::matchingWords(string wildCard)
 	}
 	return resultWord;
 }
-

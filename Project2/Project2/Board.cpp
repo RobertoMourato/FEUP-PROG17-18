@@ -1,15 +1,21 @@
  #include "Board.h"
 
 
-
-/*Board::Board()
+Board::Board()
 {
-	
-}
-*/
+	lines = 10;  //default size
+	columns = 10; //default size
+}//constructor 
+
+Board::Board(unsigned int lines, unsigned int columns)
+{
+	this->lines = lines;
+	this->columns = columns;
+}	//constructor with arguments	
 
 Board::~Board()
 {
+
 }
 
 void Board::addVertical(string word, int line, int column)
@@ -61,7 +67,6 @@ void Board::removeVertical(int line, int column)
 		if (layout[column].at(line - 1) == '#') layout[column].at(line - 1) = '.';
 		else return;
 	}
-	//else if (!(layout[column].at(line +1) >= 65 && layout[column].at(line + 1) <= 90)) return;
 
 	int i = 0;
 	while (true)
@@ -86,7 +91,6 @@ void Board::removeHorizontal(int line, int column)
 		if (layout.at(column - 1)[line] == '#') layout.at(column - 1)[line] = '.';
 		else return;
 	}
-	//else if (!(layout.at(column + 1)[line] >= 65 && layout.at(column + 1)[line] <= 90)) return;
 
 	int i = 0;
 	while (true)
@@ -125,19 +129,7 @@ void Board::printInFile(fstream *f, string fileName)
 		*f << (*it).first << " " << (*it).second;
 		*f << endl;
 	}
-}
-
-Board::Board()
-{
-	lines = 10;  //default size
-	columns = 10; //default size
-}//constructor 
-
-Board::Board(unsigned int lines, unsigned int columns)
-{
-	this->lines = lines;
-	this->columns = columns;
-}	//constructor with arguments					
+}				
 
 void Board::pointFill()
 {
