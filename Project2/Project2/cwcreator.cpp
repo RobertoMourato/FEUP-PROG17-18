@@ -1,6 +1,5 @@
 #include"Dictionary.h"
 #include"Board.h"
-#include"Player.h"
 
 using namespace std;
 

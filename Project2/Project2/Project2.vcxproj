@@ -118,12 +118,10 @@
     <ClCompile Include="cwcreator.cpp" />
     <ClCompile Include="Dictionary.cpp" />
     <ClCompile Include="Board.cpp" />
-    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dictionary.h" />
     <ClInclude Include="Board.h" />
-    <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
