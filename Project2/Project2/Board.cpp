@@ -72,7 +72,7 @@ void Board::removeVertical(int line, int column)
 		if (!crossedWordsVertical(column, line - 1))
 		{
 		    if (layout[column].at(line - 1) == '#') layout[column].at(line - 1) = '.';
-			else return;
+			
 		}
 		
 	}
@@ -83,14 +83,10 @@ void Board::removeVertical(int line, int column)
 		if (line + i == lines) return;
 		if (layout[column][line + i] == '#')
 		{
-			if (!crossedWordsVertical(column, line - 1) || (!crossedWordsHorizontal(column, line -1)))
-			{
-				layout[column][line + i] = '.';
-				
-			}
+			layout[column][line + i] = '.';
 			return;
 		}
-		if (crossedWordsVertical(column, line + i) || (!crossedWordsHorizontal(column, line +i)))
+		if  (crossedWordsVertical(column, line +i))
 		{
 			i++; continue;
 		}
@@ -103,10 +99,12 @@ void Board::removeHorizontal(int line, int column)
 {
 	if (0 < column)
 	{
-		if (!crossedWordsHorizontal(column - 1, line) || (!crossedWordsVertical(column - 1, line)))
-		if (layout.at(column - 1)[line] == '#') layout.at(column - 1)[line] = '.';
-		else return;
+		if (!crossedWordsHorizontal(column - 1, line))
+		{
+			if (layout.at(column - 1)[line] == '#') layout.at(column - 1)[line] = '.';
+		}
 	}
+
 
 	int i = 0;
 	while (true)
@@ -117,7 +115,7 @@ void Board::removeHorizontal(int line, int column)
 			layout[column + i][line] = '.';
 			return;
 		}
-		if (!crossedWordsHorizontal(column + i, line) || (!crossedWordsVertical(column + i, line)))
+		if  (crossedWordsHorizontal(column + i, line))
 		{
 			i++; continue;
 		}

@@ -169,6 +169,7 @@ void helpInsertWord(string position, Board *boardP, Dictionary *dictP)
 		}
 	}
 }
+
 bool finishingCreate(Board *boardP, Dictionary *dictP) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	bool finishedBoard, errorInput;
@@ -626,6 +627,7 @@ void puzzleResume()
 
 	}
 }
+
 int main()
 {
 	//program layout
