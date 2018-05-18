@@ -73,5 +73,4 @@ public:
 
 	void reExtraction(string outputFile);
 
-	void showmap();
 };

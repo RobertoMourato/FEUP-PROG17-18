@@ -169,6 +169,170 @@ void helpInsertWord(string position, Board *boardP, Dictionary *dictP)
 		}
 	}
 }
+bool finishingCreate(Board *boardP, Dictionary *dictP) {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	bool finishedBoard, errorInput;
+
+	do
+	{
+		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+		errorInput = false;
+		cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+		cin >> finishedBoard;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(10000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageResume;
+			SetConsoleTextAttribute(hConsole, 15);
+			errorInput = true;
+		}
+
+		if (cin.eof())
+		{
+			cin.clear();
+			cin.ignore(10000, '\n');
+			errorInput = true;
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageResume;
+			SetConsoleTextAttribute(hConsole, 15);
+		}
+	} while (errorInput);
+
+	if (finishedBoard)
+	{
+		boardP->hashtagFill();
+		bool validity = allWordsValidity(boardP, dictP);
+		if (validity) {
+			boardP->extraction();
+		}
+		else {
+			bool finishExtraction;
+			do {
+				string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+				errorInput = false;
+
+				cout << "Do you want to:\n\t finish with the wrong words (1)\n\t to replace the wrong words (0)\n\t\tAnswer -> ";
+				cin >> finishExtraction;
+
+				if (cin.fail())
+				{
+					cin.clear();
+					cin.ignore(10000, '\n');
+					SetConsoleTextAttribute(hConsole, 244);
+					cout << errorMessageResume;
+					SetConsoleTextAttribute(hConsole, 15);
+					errorInput = true;
+				}
+
+				if (cin.eof())
+				{
+					cin.clear();
+					cin.ignore(10000, '\n');
+					errorInput = true;
+					SetConsoleTextAttribute(hConsole, 244);
+					cout << errorMessageResume;
+					SetConsoleTextAttribute(hConsole, 15);
+				}
+			} while (errorInput);
+
+			if (finishExtraction)
+			{
+				boardP->extraction();
+			}
+			else return false;
+		}
+
+	}
+	else
+	{
+		boardP->extraction();
+	}
+	return true;
+}
+
+bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	bool finishedBoard, errorInput;
+
+	do
+	{
+		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+		errorInput = false;
+		cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+		cin >> finishedBoard;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(10000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageResume;
+			SetConsoleTextAttribute(hConsole, 15);
+			errorInput = true;
+		}
+
+		if (cin.eof())
+		{
+			cin.clear();
+			cin.ignore(10000, '\n');
+			errorInput = true;
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << errorMessageResume;
+			SetConsoleTextAttribute(hConsole, 15);
+		}
+	} while (errorInput);
+
+	if (finishedBoard)
+	{
+		boardP->hashtagFill();
+		bool validity = allWordsValidity(boardP, dictP);
+		//cout << "\nThe extraction will continue\n";
+		boardP->reExtraction(inputFile);
+
+	}
+	else
+	{
+		bool finishExtraction;
+		do {
+			string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+			errorInput = false;
+
+			cout << "Do you want to:\n\t finish with the wrong words (1)\n\t to replace the wrong words (0)\n\t\tAnswer -> ";
+			cin >> finishExtraction;
+
+			if (cin.fail())
+			{
+				cin.clear();
+				cin.ignore(10000, '\n');
+				SetConsoleTextAttribute(hConsole, 244);
+				cout << errorMessageResume;
+				SetConsoleTextAttribute(hConsole, 15);
+				errorInput = true;
+			}
+
+			if (cin.eof())
+			{
+				cin.clear();
+				cin.ignore(10000, '\n');
+				errorInput = true;
+				SetConsoleTextAttribute(hConsole, 244);
+				cout << errorMessageResume;
+				SetConsoleTextAttribute(hConsole, 15);
+			}
+		} while (errorInput);
+
+		if (finishExtraction)
+		{
+			boardP->reExtraction(inputFile);
+		}
+		else return false;
+	}
+	{
+		boardP->reExtraction(inputFile);
+	}
+}
 
 void puzzleCreate()
 {
@@ -184,7 +348,7 @@ void puzzleCreate()
 		string errorMessageFileInput = "That input is not valid! Try again\n";
 		cout << "Dictionary file name ? ";
 		cin >> dict.fileNameInput;
-		if (cin.fail()) 
+		if (cin.fail())
 		{
 			cin.ignore(1000000, '\n');
 			SetConsoleTextAttribute(hConsole, 244);
@@ -204,7 +368,7 @@ void puzzleCreate()
 
 	} while (cin.fail() || errorOpeningFile);
 
-			
+
 	//creation of the board
 	int lines, columns;
 
@@ -217,7 +381,7 @@ void puzzleCreate()
 		string errorMessage26 = "\nI'm sorry but that number is too big! Write that again.\n";
 		string errorMessageCinFail = "\nThose aren't valid sizes for the board! Try again...\n";
 		cinError = false;
-		cout << "Board size[max size=26] (lines columns)? "; cin >> lines >> columns; 
+		cout << "Board size[max size=26] (lines columns)? "; cin >> lines >> columns;
 
 		SetConsoleTextAttribute(hConsole, 244);
 		if (cin.fail())
@@ -233,7 +397,7 @@ void puzzleCreate()
 			cinError = true;
 		}
 		SetConsoleTextAttribute(hConsole, 15);
-	} while (cinError);	
+	} while (cinError);
 
 
 	//construct the board
@@ -245,17 +409,24 @@ void puzzleCreate()
 
 	//loop to fill in the board
 	string position, word;
-	while (true) 
+	while (true)
 	{
 		board.show(); //show the board
-		//the user choose what to do
+					  //the user choose what to do
 		cout << "Position ( LCD / CTRL-Z = stop ) ? "; cin >> position; //<======================= tornar mais robusto
-		if (cin.eof()) { cin.clear(); break; } //CTRL-Z to get out of the loop
+																		//CTRL-Z to get out of the loop
+		if (cin.eof())
+		{
+			cin.clear();
+			bool finishBoard = finishingCreate(boardA, dictA);
+			if (finishBoard) break;
+			else continue;
+		}
 
 		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
 		transform(word.begin(), word.end(), word.begin(), ::toupper); //upper case the word
 
-		//check if position input is correct
+																	  //check if position input is correct
 		if (!board.validPosition(position))
 		{
 			SetConsoleTextAttribute(hConsole, 244);
@@ -263,70 +434,77 @@ void puzzleCreate()
 			SetConsoleTextAttribute(hConsole, 15);
 		}
 		//to remove a word
-		else if ("-" == word) 
+		else if ("-" == word)
 		{
 			board.removeWord(position);
 		}
 		//to help the user
-		else if ("?" == word) 
+		else if ("?" == word)
 		{
 			helpInsertWord(position, boardA, dictA);
 		}
 		//to add the respective word
 		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
 
-	} 
-
+	}
+	/*
 	bool finishedBoard, errorInput;
-	
-	
-	do 
-	{
-		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
-		errorInput = false;
-		cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
-		cin >> finishedBoard;
-		if (cin.fail())
-		{
-			cin.clear();
-			cin.ignore(10000, '\n');
-			SetConsoleTextAttribute(hConsole, 244);
-			cout << errorMessageResume;
-			SetConsoleTextAttribute(hConsole, 15);
-			errorInput = true;
-		}
 
-		if (cin.eof()) 
-		{
-			cin.clear();
-			cin.ignore(10000, '\n');
-			errorInput = true;
-			SetConsoleTextAttribute(hConsole, 244);
-			cout << errorMessageResume;
-			SetConsoleTextAttribute(hConsole, 15);
-		}
+
+	do
+	{
+	string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+	errorInput = false;
+	cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+	cin >> finishedBoard;
+	if (cin.fail())
+	{
+	cin.clear();
+	cin.ignore(10000, '\n');
+	SetConsoleTextAttribute(hConsole, 244);
+	cout << errorMessageResume;
+	SetConsoleTextAttribute(hConsole, 15);
+	errorInput = true;
+	}
+
+	if (cin.eof())
+	{
+	cin.clear();
+	cin.ignore(10000, '\n');
+	errorInput = true;
+	SetConsoleTextAttribute(hConsole, 244);
+	cout << errorMessageResume;
+	SetConsoleTextAttribute(hConsole, 15);
+	}
 	} while (errorInput);
 
-	if (finishedBoard) 
+	if (finishedBoard)
 	{
-		board.hashtagFill();
-		bool validity = allWordsValidity(boardA, dictA);
-		//cout << "\nThe extraction will continue\n";
-		board.extraction();
+	board.hashtagFill();
+	bool validity = allWordsValidity(boardA, dictA);
+	if (validity) {
+	board.extraction();
+	}
+	else {
+	bool finishExtraction;
+	cout << "Do you want to finish (1) or to remove the wrong words (0) ? ";
+	cin >> finishExtraction;
+	}
 
 	}
-	else 
+	else
 	{
-		board.extraction();
+	board.extraction();
 	}
 	//else cout << "\nwhat to do?\n";
 	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
 	//perguntar ao utilizador se quer continuar caso haja erro
 	//ou prosseguir com a extraçao
+	*/
 
-}	
+}
 
-void puzzleResume() 
+void puzzleResume()
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	string inputFile;
@@ -363,8 +541,8 @@ void puzzleResume()
 
 	fstream f;
 	fstream *fA = &f;
-	
-	do 
+
+	do
 	{
 		cin.clear();
 		errorOpeningFile = false;
@@ -372,7 +550,7 @@ void puzzleResume()
 		string errorMessageOpeningFile = "It was not possible to open the %s file";
 		cout << "File name?\n";
 		cin >> inputFile;
-		if (cin.fail()) 
+		if (cin.fail())
 		{
 			cin.ignore(1000000, '\n');
 			SetConsoleTextAttribute(hConsole, 244);
@@ -399,28 +577,30 @@ void puzzleResume()
 	} while (cin.fail() || errorOpeningFile);
 
 	Board board;
-	Board *boardA = &board; 
+	Board *boardA = &board;
 
 	board.loadFromFile(fA);
 	f.close();
 
-
 	//loop to fill in the board
 	string position, word;
-	while (true) 
+	while (true)
 	{
 		board.show(); //show the board
 					  //the user choose what to do
 		cout << "Position ( LCD / CTRL-Z = stop ) ? "; cin >> position; //<======================= tornar mais robusto
 		if (cin.eof())
 		{
-			cin.clear(); break; //CTRL-Z to get out of the loop
-		} 
+			cin.clear();
+			bool finishBoard = finishingCreate(boardA, dictA);
+			if (finishBoard) break;
+			else continue;
+		}
 
 		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
-		if (cin.eof()) 
-		{ 
-			cin.clear(); continue; 
+		if (cin.eof())
+		{
+			cin.clear(); continue;
 		}
 		transform(word.begin(), word.end(), word.begin(), ::toupper); //upper case the word
 
@@ -445,61 +625,12 @@ void puzzleResume()
 		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
 
 	}
-
-	bool finishedBoard, errorInput;
-
-
-	do
-	{
-		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
-		errorInput = false;
-		cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
-		cin >> finishedBoard;
-		if (cin.fail()) 
-		{
-			cin.clear();
-			cin.ignore(10000, '\n');
-			SetConsoleTextAttribute(hConsole, 244);
-			cout << errorMessageResume;
-			SetConsoleTextAttribute(hConsole, 15);
-			errorInput = true;
-		}
-
-		if (cin.eof()) 
-		{
-			cin.clear();
-			cin.ignore(10000, '\n');
-			errorInput = true;
-			SetConsoleTextAttribute(hConsole, 244);
-			cout << errorMessageResume;
-			SetConsoleTextAttribute(hConsole, 15);
-		}
-	} while (errorInput);
-
-	if (finishedBoard) 
-	{
-		board.hashtagFill();
-		bool validity = allWordsValidity(boardA, dictA);
-		//cout << "\nThe extraction will continue\n";
-		board.reExtraction(inputFile);
-
-	}
-	else 
-	{
-		board.reExtraction(inputFile);
-	}
-	//else cout << "\nwhat to do?\n";
-	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
-	//perguntar ao utilizador se quer continuar caso haja erro
-	//ou prosseguir com a extraçao
-
 }
-
 int main()
 {
 	//program layout
-	cout << "         CROSSWORD PUZZLE CREATOR\n";
-	cout << "==========================================\n\n";
+	cout << "               CROSSWORD PUZZLE CREATOR\n";
+	cout << "=======================================================\n\n";
 	cout << "INSTRUCTIONS:\n\n";
 
 	cout << "Position ( LCD / CTRL-Z = stop )\n";
@@ -513,14 +644,15 @@ int main()
 	cout << "  there are several options here:\n";
 	cout << "    typing a word to be added to the board\n";
 	cout << "    '-' to remove a word from the crossword board\n";
-	cout << "    '?' gives you a list of possible words to add to the board\n\n";
+	cout << "    '?' gives you a list of possible words to add to the board";
 	while (true) 
 	{
-		cout << "-----------------------------------------------------\n\n";
+		cout << "\n\n-------------------------------------------------------\n\n";
 		cout << "OPTIONS:\n";
+		cout << " 0 - Exit\n";
 		cout << " 1 - Create puzzle\n";
-		cout << " 2 - Resume puzzle\n";
-		cout << " 0 - Exit\n\n";
+		cout << " 2 - Resume puzzle\n\n";
+		
 		//error-proof input 
 		string chosenOption;
 		while(true)
@@ -536,11 +668,15 @@ int main()
 			if ("0" == chosenOption) return 0;
 			if ("1" == chosenOption)
 			{
+				cout << "\n\n                     CREATE PUZZLE \n";
+				cout << "=======================================================\n\n";
 				puzzleCreate();
 				break;
 			}
 			if ("2" == chosenOption) 
 			{ 
+				cout << "\n\n                    RESUME PUZZLE \n";
+				cout << "=======================================================\n\n";
 				puzzleResume();
 				break; 
 			}
