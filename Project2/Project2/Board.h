@@ -24,8 +24,6 @@ public:
 	Board();
 
 	Board(unsigned int lines, unsigned int columns);
-
-	//bool ResumeBoard();  //bool???
 	
 	void addVertical(string word, int line, int column);
 

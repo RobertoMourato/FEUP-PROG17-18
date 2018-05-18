@@ -170,7 +170,8 @@ void helpInsertWord(string position, Board *boardP, Dictionary *dictP)
 	}
 }
 
-bool finishingCreate(Board *boardP, Dictionary *dictP) {
+bool finishingCreate(Board *boardP, Dictionary *dictP) 
+{
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	bool finishedBoard, errorInput;
 
@@ -205,12 +206,15 @@ bool finishingCreate(Board *boardP, Dictionary *dictP) {
 	{
 		boardP->hashtagFill();
 		bool validity = allWordsValidity(boardP, dictP);
-		if (validity) {
+		if (validity) 
+		{
 			boardP->extraction();
 		}
-		else {
+		else 
+		{
 			bool finishExtraction;
-			do {
+			do 
+			{
 				string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
 				errorInput = false;
 
@@ -296,7 +300,8 @@ bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
 	else
 	{
 		bool finishExtraction;
-		do {
+		do 
+		{
 			string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
 			errorInput = false;
 

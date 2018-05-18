@@ -171,7 +171,7 @@ void Board::show()
 	int REDblack = 12; //red on black
 	int BLACKsoftGray = 112; //black on soft gray
 	int SOFTGRAYblack = 7; //soft gray on black
-	int WHITEblack = 15;
+	int WHITEblack = 15; //white on black
 
 	SetConsoleTextAttribute(hConsole, REDblack);
 	char a = 'a';

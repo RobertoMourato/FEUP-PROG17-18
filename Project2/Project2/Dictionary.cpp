@@ -112,7 +112,8 @@ bool Dictionary::loadToProgram()
 	string headline;
 
 	f.open(fileNameInput);
-	if (!f.is_open()) {
+	if (!f.is_open()) 
+	{
 		SetConsoleTextAttribute(hConsole, 244);
 		cerr << "File " << fileNameInput << " could not be found!\nTry again!\n";
 		SetConsoleTextAttribute(hConsole, 15);
