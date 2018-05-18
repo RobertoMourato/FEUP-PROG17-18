@@ -432,11 +432,11 @@ void puzzleCreate()
 		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
 		transform(word.begin(), word.end(), word.begin(), ::toupper); //upper case the word
 
-																	  //check if position input is correct
-		if (!board.validPosition(position))
+																	  
+		if (!board.validPosition(position))                     //check if position input is correct
 		{
 			SetConsoleTextAttribute(hConsole, 244);
-			cout << "That position is not valid... Try Again!\n";
+			cout << "That position is not valid... \nTry Again!\n";
 			SetConsoleTextAttribute(hConsole, 15);
 		}
 		//to remove a word
