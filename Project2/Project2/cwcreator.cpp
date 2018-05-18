@@ -150,6 +150,10 @@ void helpInsertWord(string position, Board *boardP, Dictionary *dictP)
 				cin.clear();
 				wordMatchesVector = false;
 				cin >> answer;
+				if (cin.eof())
+				{
+					cin.clear(); cout << returnMessage;  return;
+				}
 				if (cin.fail()) 
 				{
 					cin.clear();
@@ -159,6 +163,7 @@ void helpInsertWord(string position, Board *boardP, Dictionary *dictP)
 					SetConsoleTextAttribute(hConsole, 15);
 					continue;
 				}
+				
 				transform(answer.begin(), answer.end(), answer.begin(), ::toupper); //upper case
 				for (unsigned int i = 0; i < resultWord.size(); i++)
 					if (resultWord[i] == answer)
@@ -166,10 +171,7 @@ void helpInsertWord(string position, Board *boardP, Dictionary *dictP)
 						wordMatchesVector = true;	//and a mistaken word here would break the "security" of the board
 						break;
 					}
-				if (cin.eof())
-				{
-					cin.clear(); cout << returnMessage;  return;
-				}
+				
 			} while (cin.fail() || !wordMatchesVector);
 			boardP->addWord(answer, position);
 		}
