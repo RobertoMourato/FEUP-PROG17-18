@@ -83,7 +83,7 @@ void Board::removeVertical(int line, int column)
 		if (line + i == lines) return;
 		if (layout[column][line + i] == '#')
 		{
-			layout[column][line + i] = '.';
+			
 			return;
 		}
 		if (crossedWordsVertical(column, line + i))
@@ -112,7 +112,7 @@ void Board::removeHorizontal(int line, int column)
 		if (column + i == columns) return;
 		if (layout[column + i][line] == '#')
 		{
-			layout[column + i][line] = '.';
+			
 			return;
 		}
 		if (crossedWordsHorizontal(column + i, line))

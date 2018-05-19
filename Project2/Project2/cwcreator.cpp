@@ -180,7 +180,7 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
 		errorInput = false;
 		//cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
-		cout << "What do you want to do:\n\tsave finished board (1)\n\tsave unfinished board (0)\n\tdon't save board at all (CTRL-Z)\n\t\tAnswer -> ";
+		cout << "What do you want to do:\n\tSave finished board (1)\n\tSave unfinished board (0)\n\tDon't save board at all (CTRL-Z)\n\t\tAnswer -> ";
 		cin >> finishedBoard;
 		if (cin.fail())
 		{
@@ -678,33 +678,33 @@ int main()
 	cout << "=======================================================\n\n";
 	cout << "INSTRUCTIONS:\n\n";
 
-	cout << "Position ( LCD / CTRL-Z = stop )\n";
-	cout << "  LCD stands for Line Column and Direction\n";
-	cout << "    Line and Column represented by its name\n";
-	cout << "      upper case for lines\n";
-	cout << "      lower case for columns\n";
+	cout << " -Position ( LCD / CTRL-Z = stop )\n";
+	cout << "   LCD stands for Line Column and Direction\n";
+	cout << "     Line and Column represented by its name\n";
+	cout << "      . upper case for lines\n";
+	cout << "      . lower case for columns\n";
 	cout << "    Direction can be vertical (V) or horizontal (H)\n";
-	cout << "  CTRL-Z will end the board creation and start the file extraction process";
-	cout << "Word ( - = remove / ? = help )\n";
-	cout << "  there are several options here:\n";
-	cout << "    typing a word to be added to the board\n";
-	cout << "    '-' to remove a word from the crossword board\n";
-	cout << "    '?' gives you a list of possible words to add to the board";
-	while (true) 
+	cout << "   CTRL-Z will end the board creation and start the file extraction process\n";
+	cout << " -Word ( - = remove / ? = help )\n";
+	cout << "   There are several options here:\n";
+	cout << "      . typing a word to be added to the board\n";
+	cout << "      . '-' to remove a word from the crossword board\n";
+	cout << "      . '?' gives you a list of possible words to add to the board";
+	while (true)
 	{
 		cout << "\n\n-------------------------------------------------------\n\n";
 		cout << "OPTIONS:\n";
 		cout << " 0 - Exit\n";
 		cout << " 1 - Create puzzle\n";
 		cout << " 2 - Resume puzzle\n\n";
-		
+
 		//error-proof input 
 		string chosenOption;
-		while(true)
+		while (true)
 		{
 			cout << "Option ? ";
 			cin >> chosenOption;
-			if (cin.eof()) 
+			if (cin.eof())
 			{
 				cin.clear();
 				cin.ignore(1000, '\n');
@@ -718,13 +718,13 @@ int main()
 				puzzleCreate();
 				break;
 			}
-			if ("2" == chosenOption) 
-			{ 
+			if ("2" == chosenOption)
+			{
 				cout << "\n\n                    RESUME PUZZLE \n";
 				cout << "=======================================================\n\n";
 				puzzleResume();
-				break; 
+				break;
 			}
-		} 
+		}
 	}
 }
