@@ -204,11 +204,45 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 
 	if (finishedBoard)
 	{
+		int save;
 		boardP->hashtagFill();
 		bool validity = allWordsValidity(boardP, dictP);
-		if (validity) 
+		if (validity)
 		{
-			boardP->extraction();
+			do
+			{
+				string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+				errorInput = false;
+				cout << "Wanna save your board (1) or exit without saving (0) ?";
+				cin >> save;
+				if (cin.fail())
+				{
+					cin.clear();
+					cin.ignore(10000, '\n');
+					SetConsoleTextAttribute(hConsole, 244);
+					cout << errorMessageResume;
+					SetConsoleTextAttribute(hConsole, 15);
+					errorInput = true;
+				}
+
+				if (cin.eof())
+				{
+					cin.clear();
+					cin.ignore(10000, '\n');
+					errorInput = true;
+					SetConsoleTextAttribute(hConsole, 244);
+					cout << errorMessageResume;
+					SetConsoleTextAttribute(hConsole, 15);
+				}
+			} while (errorInput);
+
+			
+			if (save)
+			{
+				boardP->extraction();
+			}
+			else exit (0);
+		
 		}
 		else 
 		{
@@ -244,6 +278,40 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 
 			if (finishExtraction)
 			{
+				do
+				{
+					string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+					errorInput = false;
+					cout << "Wanna save your board (1) or exit without saving (0) ?";
+					cin >> save;
+					if (cin.fail())
+					{
+						cin.clear();
+						cin.ignore(10000, '\n');
+						SetConsoleTextAttribute(hConsole, 244);
+						cout << errorMessageResume;
+						SetConsoleTextAttribute(hConsole, 15);
+						errorInput = true;
+					}
+
+					if (cin.eof())
+					{
+						cin.clear();
+						cin.ignore(10000, '\n');
+						errorInput = true;
+						SetConsoleTextAttribute(hConsole, 244);
+						cout << errorMessageResume;
+						SetConsoleTextAttribute(hConsole, 15);
+					}
+				} while (errorInput);
+
+
+				if (save)
+				{
+					boardP->extraction();
+				}
+				else exit(0);
+
 				boardP->extraction();
 			}
 			else return false;
