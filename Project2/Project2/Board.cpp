@@ -126,10 +126,11 @@ void Board::removeHorizontal(int line, int column)
 		i++;
 	}
 }
-void Board::printInFile(fstream *f, string fileName)
+
+void Board::printInFile(fstream *f, string dictFile)
 {
 	//name and space
-	*f << fileName << endl << endl;
+	*f << dictFile << endl << endl;
 
 	//the board
 	for (unsigned int j = 0; j < lines; j++)
@@ -521,7 +522,7 @@ vector<string> Board::verifyVertical()
 	return palavras;
 }
 
-void Board::extraction()
+void Board::extraction(string dictFile)
 {
 	int n = -1;
 	string fileOutput, docType;
@@ -548,7 +549,7 @@ void Board::extraction()
 		}
 	} while (existingFile);
 
-	printInFile(fA, fileOutput);
+	printInFile(fA, dictFile);
 	cout << "The extraction was successfully made to " << fileOutput << " file!";
 	f.close();
 }
@@ -565,7 +566,6 @@ void Board::loadFromFile(fstream *f)
 {
 	string line; //complete lines
 	string word, position;
-	getline(*f, line); //first line
 	getline(*f, line); //second line, blank
 	getline(*f, line); //first board 
 	lines = line.size() / 2; //number of board lines
@@ -587,14 +587,14 @@ void Board::loadFromFile(fstream *f)
 
 }
 
-void Board::reExtraction(string outputFile)
+void Board::reExtraction(string dictFile, string outputFile)
 {
 	fstream f;
 	fstream *fA = &f;
 
 	f.open(outputFile);
 
-	printInFile(fA, outputFile);
+	printInFile(fA, dictFile);
 	cout << "The extraction was successfully made to " << outputFile << " file!";
 	f.close();
 }

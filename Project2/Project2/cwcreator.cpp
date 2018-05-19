@@ -30,16 +30,30 @@ bool allWordsValidity(Board *boardP, Dictionary *dictP)
 			return false;
 		}
 	}
+	SetConsoleTextAttribute(hConsole, 15);
 	return true;
 }
  
 bool checkValidity(Dictionary *dictP, Board *boardP, string word, string position) 
 {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	//check the existance of the word
-	if (!dictP->headlineExists(word)) return false;
+	if (!dictP->headlineExists(word))
+	{
+		SetConsoleTextAttribute(hConsole, 15);
+		return false;
+	}
 
-	if (!boardP->unusedWord(word)) return false;
-	if (!boardP->checkSpace4Word(word, position)) return false;
+	if (!boardP->unusedWord(word)) 
+	{
+		SetConsoleTextAttribute(hConsole, 15);
+		return false;
+	}
+	if (!boardP->checkSpace4Word(word, position))
+	{
+		SetConsoleTextAttribute(hConsole, 15);
+		return false;
+	}
 	return true;
 }
 
@@ -198,61 +212,16 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 			cout << errorMessageResume;
 			SetConsoleTextAttribute(hConsole, 15);
 			errorInput = true;
-		}
-		/*
-		if (cin.eof())
-		{
-			cin.clear();
-			cin.ignore(10000, '\n');
-			errorInput = true;
-			SetConsoleTextAttribute(hConsole, 244);
-			cout << errorMessageResume;
-			SetConsoleTextAttribute(hConsole, 15);
-		}*/
-		
+		}	
 	} while (errorInput);
 
 	if (finishedBoard)
-	{
-		bool save;
-		boardP->hashtagFill();
+	{		
 		bool validity = allWordsValidity(boardP, dictP);
 		if (validity)
 		{
-			/*do
-			{
-				string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
-				errorInput = false;
-				cout << "Wanna save your board (1) or exit without saving (0) ?";
-				cin >> save;
-				if (cin.fail())
-				{
-					cin.clear();
-					cin.ignore(10000, '\n');
-					SetConsoleTextAttribute(hConsole, 244);
-					cout << errorMessageResume;
-					SetConsoleTextAttribute(hConsole, 15);
-					errorInput = true;
-				}
-
-				if (cin.eof())
-				{
-					cin.clear();
-					cin.ignore(10000, '\n');
-					errorInput = true;
-					SetConsoleTextAttribute(hConsole, 244);
-					cout << errorMessageResume;
-					SetConsoleTextAttribute(hConsole, 15);
-				}
-			} while (errorInput);
-
-			
-			if (save)
-			{
-				boardP->extraction();
-			}
-			else exit (0);*/
-			boardP->extraction();
+			boardP->hashtagFill();
+			boardP->extraction(dictP->fileNameInput);
 		
 		}
 		else 
@@ -289,54 +258,18 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 
 			if (finishExtraction)
 			{
-				do
-				{
-					string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
-					errorInput = false;
-					cout << "Wanna save your board (1) or exit without saving (0) ?";
-					cin >> save;
-					if (cin.fail())
-					{
-						cin.clear();
-						cin.ignore(10000, '\n');
-						SetConsoleTextAttribute(hConsole, 244);
-						cout << errorMessageResume;
-						SetConsoleTextAttribute(hConsole, 15);
-						errorInput = true;
-					}
-
-					if (cin.eof())
-					{
-						cin.clear();
-						cin.ignore(10000, '\n');
-						errorInput = true;
-						SetConsoleTextAttribute(hConsole, 244);
-						cout << errorMessageResume;
-						SetConsoleTextAttribute(hConsole, 15);
-					}
-				} while (errorInput);
-
-
-				if (save)
-				{
-					boardP->extraction(); //redundante????
-				}
-				else exit(0); //what does this?
-
-				boardP->extraction(); //redundante?????
+				boardP->extraction(dictP->fileNameInput); //redundante?????
 			}
 			else return false;
 		}
-
 	}
 	else
 	{
-		boardP->extraction();
+		boardP->extraction(dictP->fileNameInput);
 	}
 	return true;
 }
 
-//desatualizado
 bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -346,8 +279,17 @@ bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
 	{
 		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
 		errorInput = false;
-		cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+		//cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+		cout << "What do you want to do:\n\tSave finished board (1)\n\tSave unfinished board (0)\n\tDon't save board at all (CTRL-Z)\n\t\tAnswer -> ";
 		cin >> finishedBoard;
+
+		if (cin.eof())
+		{
+			cin.clear();
+			cin.ignore(1000, '\n');
+			return true;
+		}
+
 		if (cin.fail())
 		{
 			cin.clear();
@@ -357,66 +299,59 @@ bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
 			SetConsoleTextAttribute(hConsole, 15);
 			errorInput = true;
 		}
-
-		if (cin.eof())
-		{
-			cin.clear();
-			cin.ignore(10000, '\n');
-			errorInput = true;
-			SetConsoleTextAttribute(hConsole, 244);
-			cout << errorMessageResume;
-			SetConsoleTextAttribute(hConsole, 15);
-		}
 	} while (errorInput);
 
 	if (finishedBoard)
 	{
-		boardP->hashtagFill();
 		bool validity = allWordsValidity(boardP, dictP);
-		//cout << "\nThe extraction will continue\n";
-		boardP->reExtraction(inputFile);
+		if (validity)
+		{
+			boardP->hashtagFill();
+			boardP->extraction(dictP->fileNameInput);
 
+		}
+		else
+		{
+			bool finishExtraction;
+			do
+			{
+				string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
+				errorInput = false;
+
+				cout << "Do you want to:\n\t finish with the wrong words (1)\n\t to replace the wrong words (0)\n\t\tAnswer -> ";
+				cin >> finishExtraction;
+
+				if (cin.fail())
+				{
+					cin.clear();
+					cin.ignore(10000, '\n');
+					SetConsoleTextAttribute(hConsole, 244);
+					cout << errorMessageResume;
+					SetConsoleTextAttribute(hConsole, 15);
+					errorInput = true;
+				}
+
+				if (cin.eof())
+				{
+					cin.clear();
+					cin.ignore(10000, '\n');
+					errorInput = true;
+					SetConsoleTextAttribute(hConsole, 244);
+					cout << errorMessageResume;
+					SetConsoleTextAttribute(hConsole, 15);
+				}
+			} while (errorInput);
+
+			if (finishExtraction)
+			{
+				boardP->extraction(dictP->fileNameInput);
+			}
+			else return false;
+		}
 	}
 	else
 	{
-		bool finishExtraction;
-		do 
-		{
-			string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
-			errorInput = false;
-
-			cout << "Do you want to:\n\t finish with the wrong words (1)\n\t to replace the wrong words (0)\n\t\tAnswer -> ";
-			cin >> finishExtraction;
-
-			if (cin.fail())
-			{
-				cin.clear();
-				cin.ignore(10000, '\n');
-				SetConsoleTextAttribute(hConsole, 244);
-				cout << errorMessageResume;
-				SetConsoleTextAttribute(hConsole, 15);
-				errorInput = true;
-			}
-
-			if (cin.eof())
-			{
-				cin.clear();
-				cin.ignore(10000, '\n');
-				errorInput = true;
-				SetConsoleTextAttribute(hConsole, 244);
-				cout << errorMessageResume;
-				SetConsoleTextAttribute(hConsole, 15);
-			}
-		} while (errorInput);
-
-		if (finishExtraction)
-		{
-			boardP->reExtraction(inputFile);
-		}
-		else return false;
-	}
-	{
-		boardP->reExtraction(inputFile);
+		boardP->extraction(dictP->fileNameInput);
 	}
 	return true;
 }
@@ -554,7 +489,7 @@ void puzzleResume()
 	Dictionary dict;
 	Dictionary *dictA = &dict;
 	bool errorOpeningFile;
-	do
+	/*do
 	{
 		errorOpeningFile = false;
 		cin.clear();
@@ -579,7 +514,7 @@ void puzzleResume()
 		}
 		if (!dict.loadToProgram()) errorOpeningFile = true;
 
-	} while (cin.fail() || errorOpeningFile);
+	} while (cin.fail() || errorOpeningFile); */
 
 	fstream f;
 	fstream *fA = &f;
@@ -590,7 +525,7 @@ void puzzleResume()
 		errorOpeningFile = false;
 		string errorMessageFileInput = "That input is not valid! Try again\n";
 		string errorMessageOpeningFile = "It was not possible to open the %s file";
-		cout << "File name?\n";
+		cout << "File name? ";
 		cin >> inputFile;
 		if (cin.fail())
 		{
@@ -620,6 +555,9 @@ void puzzleResume()
 
 	Board board;
 	Board *boardA = &board;
+
+	getline(f, dict.fileNameInput);
+	dict.loadToProgram();
 
 	board.loadFromFile(fA);
 	f.close();

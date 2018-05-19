@@ -66,11 +66,11 @@ public:
 
 	vector<string> verifyVertical();
 
-	void extraction();
+	void extraction(string dictFile);
 
 	void hashtagFill();
 
-	void reExtraction(string outputFile);
+	void reExtraction(string dictFile, string outputFile);
 
 	void grid();
 
