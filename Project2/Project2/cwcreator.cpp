@@ -182,6 +182,14 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 		//cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
 		cout << "What do you want to do:\n\tSave finished board (1)\n\tSave unfinished board (0)\n\tDon't save board at all (CTRL-Z)\n\t\tAnswer -> ";
 		cin >> finishedBoard;
+
+		if (cin.eof())
+		{
+			cin.clear();
+			cin.ignore(1000, '\n');
+			return true;
+		}
+
 		if (cin.fail())
 		{
 			cin.clear();
@@ -201,13 +209,7 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 			cout << errorMessageResume;
 			SetConsoleTextAttribute(hConsole, 15);
 		}*/
-		if (cin.eof())
-		{
-			cin.clear();
-			cin.ignore(1000, '\n');
-			return true;
-		}
-
+		
 	} while (errorInput);
 
 	if (finishedBoard)
