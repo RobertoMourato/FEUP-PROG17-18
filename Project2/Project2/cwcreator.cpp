@@ -334,6 +334,7 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 	return true;
 }
 
+//desatualizado
 bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -511,6 +512,14 @@ void puzzleCreate()
 		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
 		transform(word.begin(), word.end(), word.begin(), ::toupper); //upper case the word
 
+		if (cin.eof()) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << "That is not a valid answer!";
+			SetConsoleTextAttribute(hConsole, 15);
+			continue;
+		}
 																	  
 		if ((position.size() != 3) || (!board.validPosition(position)))                    //check if position input is correct
 		{
@@ -629,12 +638,16 @@ void puzzleResume()
 		}
 
 		cout << "Word ( - = remove / ? = help ) . ? "; cin >> word;
-		if (cin.eof())
-		{
-			cin.clear(); continue;
-		}
 		transform(word.begin(), word.end(), word.begin(), ::toupper); //upper case the word
 
+		if (cin.eof()) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			SetConsoleTextAttribute(hConsole, 244);
+			cout << "That is not a valid answer!";
+			SetConsoleTextAttribute(hConsole, 15);
+			continue;
+		}
 																	  //check if position input is correct
 		if (!board.validPosition(position))
 		{
