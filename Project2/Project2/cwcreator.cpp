@@ -454,61 +454,7 @@ void puzzleCreate()
 		else if (checkValidity(dictA, boardA, word, position)) board.addWord(word, position);
 
 	}
-	/*
-	bool finishedBoard, errorInput;
-
-
-	do
-	{
-	string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
-	errorInput = false;
-	cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
-	cin >> finishedBoard;
-	if (cin.fail())
-	{
-	cin.clear();
-	cin.ignore(10000, '\n');
-	SetConsoleTextAttribute(hConsole, 244);
-	cout << errorMessageResume;
-	SetConsoleTextAttribute(hConsole, 15);
-	errorInput = true;
-	}
-
-	if (cin.eof())
-	{
-	cin.clear();
-	cin.ignore(10000, '\n');
-	errorInput = true;
-	SetConsoleTextAttribute(hConsole, 244);
-	cout << errorMessageResume;
-	SetConsoleTextAttribute(hConsole, 15);
-	}
-	} while (errorInput);
-
-	if (finishedBoard)
-	{
-	board.hashtagFill();
-	bool validity = allWordsValidity(boardA, dictA);
-	if (validity) {
-	board.extraction();
-	}
-	else {
-	bool finishExtraction;
-	cout << "Do you want to finish (1) or to remove the wrong words (0) ? ";
-	cin >> finishExtraction;
-	}
-
-	}
-	else
-	{
-	board.extraction();
-	}
-	//else cout << "\nwhat to do?\n";
-	//funçao para verificar a validade de todas as palavras, em todas as linhas e colunas
-	//perguntar ao utilizador se quer continuar caso haja erro
-	//ou prosseguir com a extraçao
-	*/
-
+	
 }
 
 void puzzleResume()

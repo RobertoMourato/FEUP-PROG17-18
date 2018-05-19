@@ -1,3 +1,7 @@
-﻿  cwcreator.cpp
+﻿  Board.cpp
+d:\feup\prog\projetoprogmmxvii-i\project2\project2\board.cpp(709): warning C4018: '<': incompatibilidade de signed/unsigned
+  Dictionary.cpp
+  cwcreator.cpp
+  Gerando Código...
 d:\feup\prog\projetoprogmmxvii-i\project2\project2\cwcreator.cpp(341): warning C4715: 'finishingCreate': nem todos os caminhos de controle retornam um valor
   Project2.vcxproj -> D:\FEUP\PROG\ProjetoProgMMXVII-I\Project2\Debug\Project2.exe
