@@ -179,7 +179,8 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 	{
 		string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
 		errorInput = false;
-		cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+		//cout << "Is your board finished (1) or you will continue later(0) ?\n\tAnswer [1 or 0] -> ";
+		cout << "What do you want to do:\n\tsave finished board (1)\n\tsave unfinished board (0)\n\tdon't save board at all (CTRL-Z)\n\t\tAnswer -> ";
 		cin >> finishedBoard;
 		if (cin.fail())
 		{
@@ -190,7 +191,7 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 			SetConsoleTextAttribute(hConsole, 15);
 			errorInput = true;
 		}
-
+		/*
 		if (cin.eof())
 		{
 			cin.clear();
@@ -199,17 +200,24 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 			SetConsoleTextAttribute(hConsole, 244);
 			cout << errorMessageResume;
 			SetConsoleTextAttribute(hConsole, 15);
+		}*/
+		if (cin.eof())
+		{
+			cin.clear();
+			cin.ignore(1000, '\n');
+			return true;
 		}
+
 	} while (errorInput);
 
 	if (finishedBoard)
 	{
-		int save;
+		bool save;
 		boardP->hashtagFill();
 		bool validity = allWordsValidity(boardP, dictP);
 		if (validity)
 		{
-			do
+			/*do
 			{
 				string errorMessageResume = "\nThat is not a valid answer to this question! Try again\n";
 				errorInput = false;
@@ -241,7 +249,8 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 			{
 				boardP->extraction();
 			}
-			else exit (0);
+			else exit (0);*/
+			boardP->extraction();
 		
 		}
 		else 
@@ -308,11 +317,11 @@ bool finishingCreate(Board *boardP, Dictionary *dictP)
 
 				if (save)
 				{
-					boardP->extraction();
+					boardP->extraction(); //redundante????
 				}
-				else exit(0);
+				else exit(0); //what does this?
 
-				boardP->extraction();
+				boardP->extraction(); //redundante?????
 			}
 			else return false;
 		}
@@ -406,6 +415,7 @@ bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
 	{
 		boardP->reExtraction(inputFile);
 	}
+	return true;
 }
 
 void puzzleCreate()
