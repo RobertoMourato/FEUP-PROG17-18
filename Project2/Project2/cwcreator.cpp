@@ -307,7 +307,7 @@ bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
 		if (validity)
 		{
 			boardP->hashtagFill();
-			boardP->extraction(dictP->fileNameInput);
+			boardP->reExtraction(dictP->fileNameInput, inputFile);
 
 		}
 		else
@@ -344,14 +344,14 @@ bool finishingCreate(Board *boardP, Dictionary *dictP, string inputFile)
 
 			if (finishExtraction)
 			{
-				boardP->extraction(dictP->fileNameInput);
+				boardP->reExtraction(dictP->fileNameInput, inputFile);
 			}
 			else return false;
 		}
 	}
 	else
 	{
-		boardP->extraction(dictP->fileNameInput);
+		boardP->reExtraction(dictP->fileNameInput, inputFile);
 	}
 	return true;
 }
