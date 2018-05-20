@@ -9,8 +9,8 @@ Board::Board()
 
 Board::Board(unsigned int lines, unsigned int columns)
 {
-	this->lines = lines;
-	this->columns = columns;
+	this->lines = lines; //saves number of lines
+	this->columns = columns; //saves number of columns
 }	//constructor with arguments	
 
 Board::~Board()
@@ -20,116 +20,54 @@ Board::~Board()
 
 void Board::addVertical(string word, int line, int column)
 {
-	if (0 < line) layout[column].at(line - 1) = '#';
+	if (0 < line) layout[column].at(line - 1) = '#'; //if word doesnt start in the first line, add a '#' before
 
 	for (unsigned int i = 0; i < word.size(); i++)
-		layout[column][line + i] = word[i];
-	if (line + word.size() < lines) layout[column].at(line + word.size()) = '#';
+		layout[column][line + i] = word[i]; //adds the word to the positions
+	if (line + word.size() < lines) layout[column].at(line + word.size()) = '#'; //if the word doesnt finish in the last line, add a '#' after
 }
 
 void Board::addHorizontal(string word, int line, int column)
 {
-	if (0 < column) layout.at(column - 1)[line] = '#';
+	if (0 < column) layout.at(column - 1)[line] = '#';//if word doesnt start in the first column, add a '#' before
 	for (unsigned int i = 0; i < word.size(); i++)
-		layout[column + i][line] = word[i];
-	if (column + word.size() < columns) layout.at(column + word.size())[line] = '#';
+		layout[column + i][line] = word[i];//adds the word to the positions
+	if (column + word.size() < columns) layout.at(column + word.size())[line] = '#';//if the word doesnt finish in the last column, add a '#' after
 }
 
 bool Board::crossedWordsVertical(unsigned int column, unsigned int line)
 {
-	if (column > 0)
+	if (column > 0) //if word is not in the first column
 	{
-		if (layout[column - 1][line] >= 65 && layout[column - 1][line] <= 90)
+		if (layout[column - 1][line] >= 65 && layout[column - 1][line] <= 90) //checks for words in the boundaries
 			return true;
 	}
-	if (column < columns)
+	if (column < columns) //if the word is not in the last column
 	{
-		if (layout[column + 1][line] >= 65 && layout[column + 1][line] <= 90)
+		if (layout[column + 1][line] >= 65 && layout[column + 1][line] <= 90) //checks for words in the boundaries
 			return true;
 	}
-	return false;
+	return false; //false if no word in the position
 }
 
 bool Board::crossedWordsHorizontal(unsigned int column, unsigned int line)
 {
-	if (line > 0)
+	if (line > 0)//if word is not in the first line
 	{
-		if (layout[column][line - 1] >= 65 && layout[column][line - 1] <= 90)
+		if (layout[column][line - 1] >= 65 && layout[column][line - 1] <= 90) //checks for words in the boundaries
 			return true;
 	}
-	if (line < lines)
+	if (line < lines)//if the word is not in the last line
 	{
-		if (layout[column][line + 1] >= 65 && layout[column][line + 1] <= 90)
+		if (layout[column][line + 1] >= 65 && layout[column][line + 1] <= 90) //checks for words in the boundaries
 			return true;
 	}
-	return false;
-}
-
-void Board::removeVertical(int line, int column)
-{
-	if (0 < line)
-	{
-		if (!crossedWordsVertical(column, line - 1))
-		{
-			if (layout[column].at(line - 1) == '#') layout[column].at(line - 1) = '.';
-
-		}
-
-	}
-
-	int i = 0;
-	while (true)
-	{
-		if (line + i == lines) return;
-		if (layout[column][line + i] == '#' && layout[column][line + i + 1] == '.')
-		{
-			layout[column][line + i] = '.';
-			return;
-		}
-		if (layout[column][line + i] == '#') return;
-		if (crossedWordsVertical(column, line + i))
-		{
-			i++; continue;
-		}
-		else layout[column][line + i] = '.';
-		i++;
-	}
-}
-
-void Board::removeHorizontal(int line, int column)
-{
-	if (0 < column)
-	{
-		if (!crossedWordsHorizontal(column - 1, line))
-		{
-			if (layout.at(column - 1)[line] == '#') layout.at(column - 1)[line] = '.';
-		}
-	}
-
-
-	int i = 0;
-	while (true)
-	{
-		if (column + i == columns) return;
-		if (layout[column + i][line] == '#' && layout[column + i + 1][line] == '.')
-		{
-			layout[column + i][line] = '.';
-			return;
-		}
-		if (layout[column + i][line] == '#') return;
-
-		if (crossedWordsHorizontal(column + i, line))
-		{
-			i++; continue;
-		}
-		else layout[column + i][line] = '.';
-		i++;
-	}
+	return false;//false if no word in the position
 }
 
 void Board::printInFile(fstream *f, string dictFile)
 {
-	//name and space
+	//dictionary name and space
 	*f << dictFile << endl << endl;
 
 	//the board
@@ -137,17 +75,17 @@ void Board::printInFile(fstream *f, string dictFile)
 	{
 		for (unsigned int i = 0; i < columns; i++)
 		{
-			*f << layout[i][j] << " ";
+			*f << layout[i][j] << " "; //saves every position of the board
 		}
-		*f << endl;
+		*f << endl; //next line
 	}
 	//the position and word
-	*f << endl;
-	map<string, string>::iterator it;
+	*f << endl; //next line
+	map<string, string>::iterator it; //map iterator
 
-	for (it = positionWordsPlaced.begin(); it != positionWordsPlaced.end(); it++)
+	for (it = positionWordsPlaced.begin(); it != positionWordsPlaced.end(); it++) //loop in map
 	{
-		*f << (*it).first << " " << (*it).second;
+		*f << (*it).first << " " << (*it).second; //saves every position and word into the file
 		*f << endl;
 	}
 }
@@ -158,12 +96,12 @@ void Board::pointFill()
 	char point = '.';
 	//	layout:	outer vector columns
 	//			inner vector lines
-	for (unsigned int i = 0; i < columns; i++)
+	for (unsigned int i = 0; i < columns; i++) //all columns
 	{
-		layout.push_back(newEmpty);
-		for (unsigned int j = 0; j < lines; j++)
+		layout.push_back(newEmpty); //opens a space in the vector for the next column
+		for (unsigned int j = 0; j < lines; j++) //all lines
 		{
-			layout[i].push_back(point);
+			layout[i].push_back(point); //more points
 		}
 	}
 }
@@ -177,30 +115,30 @@ void Board::show()
 	int WHITEblack = 15; //white on black
 
 	SetConsoleTextAttribute(hConsole, REDblack);
-	char a = 'a';
+	char a = 'a'; 
 	char A = 'A';
 	cout << "\n   ";
-	for (unsigned int i = 0; i < columns; i++)
+	for (unsigned int i = 0; i < columns; i++) //first line identification (horizontal)
 	{
 
 		char b = a + i;
 		cout << " " << b;
 	}
 	cout << endl;
-	for (unsigned int j = 0; j < lines; j++)
+	for (unsigned int j = 0; j < lines; j++) 
 	{
 		SetConsoleTextAttribute(hConsole, REDblack);
 		char B = A + j;
-		cout << " " << B << " ";
+		cout << " " << B << " ";//first column identification (vertical)
 		for (unsigned int i = 0; i < columns; i++)
 		{
-			if (layout[i][j] == '#')
+			if (layout[i][j] == '#') //if '#', diferent color
 			{
 				cout << " ";
 				SetConsoleTextAttribute(hConsole, SOFTGRAYblack);
 				cout << layout[i][j];
 			}
-			else
+			else //letter, "normal" color
 			{
 				SetConsoleTextAttribute(hConsole, BLACKsoftGray);
 				cout << " " << layout[i][j];
@@ -209,7 +147,7 @@ void Board::show()
 		}
 		cout << endl;
 	}
-	SetConsoleTextAttribute(hConsole, WHITEblack);
+	SetConsoleTextAttribute(hConsole, WHITEblack); //normal color
 }
 
 int Board::whichLine(string position)
@@ -232,39 +170,49 @@ int Board::whichColumn(string position)
 
 void Board::addWord(string word, string position)
 {
-	int lineNum = whichLine(position);
-	int columnNum = whichColumn(position);
-	char direction = position[2];
+	int lineNum = whichLine(position); //converts the char to line number
+	int columnNum = whichColumn(position); //converts the char to column number
+	char direction = position[2]; //direction char
 
-	if ('V' == direction || 'v' == direction) addVertical(word, lineNum, columnNum);
+	//depending on the direction char, calls addvertical or addhorizontal
+	if ('V' == direction || 'v' == direction) addVertical(word, lineNum, columnNum); 
 	if ('H' == direction || 'h' == direction) addHorizontal(word, lineNum, columnNum);
 
-	positionWordsPlaced[position] = word;
+	positionWordsPlaced[position] = word; //adds the position and word in the map
 }
 
 void Board::removeWord(string position)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	int line = whichLine(position);
-	int column = whichColumn(position);
-	char direction = position[2];
-	// verificar se a posiçao no map é valida
-	// retirar a palavra do map
-	// retirar a palavra do board
 	string errorMessage = "\n\nThere aren't any words to remove in that position!\n";
+
 	map<string, string>::iterator it = positionWordsPlaced.find(position);
-	if (it != positionWordsPlaced.end())
-	{
-		positionWordsPlaced.erase(it);
-		if ('V' == direction || 'v' == direction) removeVertical(line, column);
-		else if ('H' == direction || 'h' == direction) removeHorizontal(line, column);
-	}
-	else
+	if (it == positionWordsPlaced.end()) //if position doesnt belong to the map
 	{
 		SetConsoleTextAttribute(hConsole, 244);
-		cout << errorMessage;
+		cout << errorMessage; //error
 		SetConsoleTextAttribute(hConsole, 15);
+		return;
 	}
+	else {
+		positionWordsPlaced.erase(it); //erase from map
+		boardReset(); //board reset to '.'
+		it = positionWordsPlaced.begin();
+		while (it != positionWordsPlaced.end()) //adds every word again to the board
+		{
+			addWord(it->second, it->first);
+			it++;
+		}
+	}
+	
+}
+
+void Board::boardReset()
+{
+	//every position reseted to '.'
+	for (unsigned int i = 0; i < columns; i++)
+		for (unsigned int j = 0; j < lines; j++)
+			layout[i][j] = '.';
 }
 
 bool Board::checkSpace4Word(string word, string position)
@@ -367,16 +315,16 @@ bool Board::checkSpace4Word(string word, string position)
 bool Board::unusedWord(string word)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, 244);
-	string errorMessage = "\nThe word was already used!\n\n";
-	map<string, string>::iterator it = positionWordsPlaced.begin();
+	SetConsoleTextAttribute(hConsole, 244); //error color
+	string errorMessage = "\nThe word was already used!\n\n"; //error message
+	map<string, string>::iterator it = positionWordsPlaced.begin(); //iterator
 
 	for (it; it != positionWordsPlaced.end(); it++)
 	{
-		if (it->second == word)
+		if (it->second == word) //if word ==  word being added
 		{
 			cout << errorMessage;
-			return false;
+			return false; 
 		}
 	}
 	return true;
@@ -391,31 +339,31 @@ bool Board::validPosition(string position)
 	char direction = position[2];
 	unsigned int lineN = whichLine(position);
 	unsigned int columnN = whichColumn(position);
-	string errorMessageChar = "\nOnly upper case and down case letters are, respectively, allowed in the first and second place!\n";
-	string errorMessageOutofBounds = "\nIt looks like the position %s doesn't exist in this board!\n";
-	string errorMessageDirection = "\nThat direction doesn't exist. Choose between vertical 'V' or horizontal 'H'!\n";
+	string errorMessageChar = "\nOnly upper case and down case letters are, respectively, allowed in the first and second place!\n"; //error message in case the line/column identification is wrong
+	string errorMessageOutofBounds = "\nIt looks like the position %s doesn't exist in this board!\n"; //out of boundaries error
+	string errorMessageDirection = "\nThat direction doesn't exist. Choose between vertical 'V' or horizontal 'H'!\n"; //not v or h used for direction
 
-	if (!(direction == 'v' || direction == 'V' || direction == 'h' || direction == 'H'))
+	if (!(direction == 'v' || direction == 'V' || direction == 'h' || direction == 'H')) //not V or H used for direction
 	{
 		cout << errorMessageDirection;
 		return false;
 	}
-	else if (!(line >= 65 && line <= 90))
+	else if (!(line >= 65 && line <= 90)) //not between A and Z
 	{
 		cout << errorMessageChar;
 		return false;
 	}
-	else if (!(column >= 97 && column <= 122))
+	else if (!(column >= 97 && column <= 122)) //not between a and z
 	{
 		cout << errorMessageChar;
 		return false;
 	}
-	else if (lineN > lines)
+	else if (lineN > lines) //more then existing lines
 	{
 		printf(errorMessageOutofBounds.c_str(), position.c_str());
 		return false;
 	}
-	else if (columnN > columns)
+	else if (columnN > columns) //more than existing columns
 	{
 		printf(errorMessageOutofBounds.c_str(), position.c_str());
 		return false;
@@ -430,14 +378,14 @@ void Board::getLettersRight(string &word, string position)
 	char direction = position[2];
 
 	if ('v' == direction || 'V' == direction)
-		for (unsigned int i = 0; i < word.size(); i++)
+		for (unsigned int i = 0; i < word.size(); i++) //loop in every position that the word would fit
 		{
-			if (layout[column][line + i] != '.') word[i] = layout[column][line + i];
+			if (layout[column][line + i] != '.') word[i] = layout[column][line + i]; //checks if there is anything more than ., if true, substitute in the wildcard
 		}
 	else if ('h' == direction || 'H' == direction)
-		for (unsigned int i = 0; i < word.size(); i++)
+		for (unsigned int i = 0; i < word.size(); i++) //loop in every position that the word would fit
 		{
-			if (layout[column + i][line] != '.') word[i] = layout[column + i][line];
+			if (layout[column + i][line] != '.') word[i] = layout[column + i][line]; //checks if there is anything more than ., if true, substitute in the wildcard
 		}
 }
 
@@ -529,37 +477,38 @@ void Board::extraction(string dictFile)
 	bool existingFile;
 	fstream f;
 	fstream *fA = &f;
-	do {
+	do { //looks for existing file
 		n++;
 		fileOutput = "b";
 		docType = ".txt";
 		existingFile = false;
+		//creating file name, depending on the i
 		if (n < 10) fileOutput += "00" + to_string(n) + docType;
 		else if (n < 100) fileOutput += "0" + to_string(n) + docType;
 		else fileOutput += to_string(n) + docType;
 
 		f.open(fileOutput);
-		if (f.is_open())
+		if (f.is_open()) //file existes
 		{
-			existingFile = true;
-			f.close();
+			existingFile = true; //next loop
+			f.close(); //close
 		}
 		else {
-			f.open(fileOutput, ios::out | ios::in | ios::trunc);
+			f.open(fileOutput, ios::out | ios::in | ios::trunc); //if not opened, creates file
 		}
-	} while (existingFile);
+	} while (existingFile); //next loop
 
-	printInFile(fA, dictFile);
+	printInFile(fA, dictFile); //prints everything
 	cout << "The extraction was successfully made to " << fileOutput << " file!";
-	f.close();
+	f.close(); //close
 }
 
 void Board::hashtagFill()
 {
 	for (unsigned int i = 0; i < columns; i++)
 		for (unsigned int j = 0; j < lines; j++)
-			if (layout[i][j] == '.')
-				layout[i][j] = '#';
+			if (layout[i][j] == '.') //if there is '.'
+				layout[i][j] = '#'; //switches for '#'
 }
 
 void Board::loadFromFile(fstream *f)
@@ -592,15 +541,16 @@ void Board::reExtraction(string dictFile, string outputFile)
 	fstream f;
 	fstream *fA = &f;
 
-	f.open(outputFile);
+	f.open(outputFile); //opensthe same file that it was loaded
 
-	printInFile(fA, dictFile);
+	printInFile(fA, dictFile); //prints everything
 	cout << "The extraction was successfully made to " << outputFile << " file!";
-	f.close();
+	f.close(); //close
 }
 
 void Board::grid()
 {
+	//shows adapted to the player program
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	int REDblack = 12; //red on black
 	int BLACKsoftGray = 112; //black on soft gray
@@ -625,18 +575,18 @@ void Board::grid()
 		char B = A + j;
 		cout << " " << B << " ";
 		for (unsigned int i = 0; i < columns; i++) {
-			if (layout[i][j] == '#' || layout[i][j] == '.')
+			if (layout[i][j] == '#' || layout[i][j] == '.') //if '#' or '.', shows in black
 			{
 				cout << " ";
 				SetConsoleTextAttribute(hConsole, BLACKblack);
 				cout << layout[i][j];
 			}
-			else if (layout[i][j] == '$')
+			else if (layout[i][j] == '$') //if '$', shows in gray
 			{
 				SetConsoleTextAttribute(hConsole, WHITEwhite);
 				cout << " " << layout[i][j];
 			}
-			else
+			else //else, normal color
 			{
 				SetConsoleTextAttribute(hConsole, SOFTGRAYblack);
 				cout << " " << layout[i][j];
@@ -647,24 +597,24 @@ void Board::grid()
 	}
 	SetConsoleTextAttribute(hConsole, WHITEblack);
 }
-//
+
 void Board::addVerticalGrid(string word, int line, int column)
 {
-	if (0 < line) layout[column].at(line - 1) = '#';
+	if (0 < line) layout[column].at(line - 1) = '#'; //if not in the beginning of column, add '#' before
 
-	for (unsigned int i = 0; i < word.size(); i++)
-		layout[column][line + i] = '$';
-	if (line + word.size() < lines) layout[column].at(line + word.size()) = '#';
+	for (unsigned int i = 0; i < word.size(); i++) //loop in word
+		layout[column][line + i] = '$';//adds "$$$" word to the grid
+	if (line + word.size() < lines) layout[column].at(line + word.size()) = '#'; //if not the end of column, add '#'
 }
-//
+
 void Board::addHorizontalGrid(string word, int line, int column)
 {
-	if (0 < column) layout.at(column - 1)[line] = '#';
-	for (unsigned int i = 0; i < word.size(); i++)
-		layout[column + i][line] = '$';
-	if (column + word.size() < columns) layout.at(column + word.size())[line] = '#';
+	if (0 < column) layout.at(column - 1)[line] = '#';//if not in the beginning of line, add '#' before
+	for (unsigned int i = 0; i < word.size(); i++) //loop in word
+		layout[column + i][line] = '$'; //adds "$$$" word to the grid
+	if (column + word.size() < columns) layout.at(column + word.size())[line] = '#';//if not the end of line, add '#'
 }
-//
+
 void Board::loadFromFileGrid(fstream *f)
 {
 	string line; //complete lines
@@ -687,24 +637,24 @@ void Board::loadFromFileGrid(fstream *f)
 		addWord1stGrid(word, position); //as they already were verified, add the word automatically
 	}
 }
-//
+
 void Board::addWord1stGrid(string word, string position)
 {
 	int lineNum = whichLine(position);
 	int columnNum = whichColumn(position);
 	char direction = position[2];
 
-	if ('V' == direction || 'v' == direction) addVerticalGrid(word, lineNum, columnNum);
-	if ('H' == direction || 'h' == direction) addHorizontalGrid(word, lineNum, columnNum);
+	if ('V' == direction || 'v' == direction) addVerticalGrid(word, lineNum, columnNum); //add word "normally" to the board (goes normal, changes to $$$$)
+	if ('H' == direction || 'h' == direction) addHorizontalGrid(word, lineNum, columnNum); //add word "normally" to the board (same as above)
 
-	positionWordsPlaced[position] = word;
+	positionWordsPlaced[position] = word; //adds in the map
 
 	for (unsigned int i = 0; i < word.size(); i++)
-		word[i] = '$';
-	positionWordsPlacedGrid[position] = word;
+		word[i] = '$'; //changes word to "$$$"
+	positionWordsPlacedGrid[position] = word; //adds "$$$" word to map
 
 }
-//
+
 void Board::addWordGrid(string word, string position)
 {
 	//map<string, string>::iterator it = positionWordsPlacedGrid.find(position);
@@ -714,13 +664,13 @@ void Board::addWordGrid(string word, string position)
 	int columnNum = whichColumn(position);
 	char direction = position[2];
 
-	if ('V' == direction || 'v' == direction) addVertical(word, lineNum, columnNum);
-	if ('H' == direction || 'h' == direction) addHorizontal(word, lineNum, columnNum);
+	if ('V' == direction || 'v' == direction) addVertical(word, lineNum, columnNum); //add vertical word
+	if ('H' == direction || 'h' == direction) addHorizontal(word, lineNum, columnNum); //add horizontal word
 
-	positionWordsPlacedGrid[position] = word;
+	positionWordsPlacedGrid[position] = word; //updates the "$$$" to the word
 	
 }
-//
+
 bool Board::unusedWordGrid(string word)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -728,18 +678,18 @@ bool Board::unusedWordGrid(string word)
 	string errorMessage = "\nThe word was already used!\n\n";
 	map<string, string>::iterator it = positionWordsPlacedGrid.begin();
 
-	for (it; it != positionWordsPlacedGrid.end(); it++)
+	for (it; it != positionWordsPlacedGrid.end(); it++) //loop in map
 	{
-		if (it->second == word)
+		if (it->second == word) //if word equal, it exists
 		{
-			cout << errorMessage;
-			return false;
+			cout << errorMessage; //error
+			return false; 
 		}
 	}
 
 	return true;
 }
-//2nd
+
 bool Board::checkSpace4WordGrid(string word, string position)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -820,33 +770,13 @@ bool Board::checkSpace4WordGrid(string word, string position)
 
 	string word$ = it->second;
 
-	if (word$.size() == word.size()) return true;
+	if (word$.size() == word.size()) return true; //if word to be put has the right size
 	SetConsoleTextAttribute(hConsole, 244);
 	cout << errorMessage;
 	SetConsoleTextAttribute(hConsole, 15);	
 	return false;
 }
 
-void Board::clues()
-{
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	//SetConsoleTextAttribute(hConsole, 244);
-	cout << "THERE'S THE POSITION AND A SYNONIM OF EACH WORD TO BE GUESSED\n\n";
-	map<string, string>::iterator it = positionWordsPlaced.begin();
-	cout << "VERTICAL WORDS\n";
-	for (it; it != positionWordsPlaced.end(); it++) {
-		if (it->first[2] == 'V') {
-			cout << it->first[0] + it->first[1] << "" << "  ";
-		}
-	}
-	cout << "HORIZONTAL WORDS\n\n";
-	it = positionWordsPlaced.begin();
-
-	for (it; it != positionWordsPlaced.end(); it++) {
-
-	}
-}
-//2nd
 void Board::removeWordGrid(string position)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -875,79 +805,89 @@ void Board::removeWordGrid(string position)
 
 	for (unsigned int i = 0; i < word$.size(); i++)
 		word$[i] = '$';
-	positionWordsPlacedGrid[position] = word$;
+	positionWordsPlacedGrid[position] = word$; //update the word to "$$$"
 }
-//
+
 void Board::removeVerticalGrid(int line, int column)
 {
 	int i = 0;
 	while (true)
 	{
-		if (line + i == lines) return;
-		if (layout[column][line + i] == '#') return;
-		if (crossedWordsVertical(column, line + i))
+		if (line + i == lines) return;//end of line
+		if (layout[column][line + i] == '#') return;//if there is a '#' in the end, return
+		if (crossedWordsVertical(column, line + i))//if letter here
 		{
-			i++; continue;
+			i++; continue;//next position
 		}
-		else layout[column][line + i] = '$';
+		else layout[column][line + i] = '$';//substitute letter to '$'
 		i++;
 	}
 }
-//
+
 void Board::removeHorizontalGrid(int line, int column)
 {
 	int i = 0;
 	while (true)
 	{
-		if (column + i == columns) return;
-		if (layout[column + i][line] == '#') return;
-		if (crossedWordsHorizontal(column + i, line))
+		if (column + i == columns) return; //end of column
+		if (layout[column + i][line] == '#') return; //if there is a '#' in the end, return
+		if (crossedWordsHorizontal(column + i, line)) //if letter here
 		{
-			i++; continue;
+			i++; continue; //next position
 		}
-		else layout[column + i][line] = '$';
+		else layout[column + i][line] = '$'; //substitute letter to '$'
 		i++;
 	}
 }
-//
+
 bool Board::finishedGrid()
 {
 	string notFinishedGrid = "Your board is wrong! The word %s is not correct!";
-	map<string, string>::iterator it = positionWordsPlacedGrid.begin();
+	map<string, string>::iterator it = positionWordsPlacedGrid.begin(); //beginning of the map
 
-	for (it; it != positionWordsPlacedGrid.end(); it++)
+	for (it; it != positionWordsPlacedGrid.end(); it++) //loop in the map
 	{
-		string word$ = it->second;
-		for (unsigned int i = 0; i < word$.size(); i++)
-			if (word$[i] == '$') return false;
+		string word$ = it->second; //saves word in the word$
+		for (unsigned int i = 0; i < word$.size(); i++) //loop in the word$
+			if (word$[i] == '$') return false; //if there is $, grid not finished
 	}
+	//if all words filled, continues
+	it = positionWordsPlaced.begin(); //inicialized in the original map beginning
+	map<string, string>::iterator itGrid = positionWordsPlacedGrid.begin(); //itGrid in map 
 
-	//map<string, string>::iterator 
-	it = positionWordsPlaced.begin();
-	map<string, string>::iterator itGrid = positionWordsPlacedGrid.begin();
-
-	while (it != positionWordsPlaced.end() || itGrid != positionWordsPlacedGrid.end())
+	while (it != positionWordsPlaced.end() || itGrid != positionWordsPlacedGrid.end()) //while end of maps not reached
 	{
-		if (it->second != itGrid->second)
+		if (it->second != itGrid->second) //if not equal
 		{
-			printf(notFinishedGrid.c_str(), (itGrid->second).c_str());
-			return false;
+			printf(notFinishedGrid.c_str(), (itGrid->second).c_str()); //prints wrong word
+			return false; //returns
 		
 		}
-		it++;
-		itGrid++;
+		it++; //adds to the iterator
+		itGrid++; //adds to the iterator
 	}
 	return true;
 }
-//
+
 map<string, string> Board::positionWords()
 {
-	return positionWordsPlaced;
+	return positionWordsPlaced; //return the map
 }
-//
+
 string Board::wordInPosition(string position)
 {
-	map<string, string>::iterator it = positionWordsPlaced.find(position);
+	map<string, string>::iterator it = positionWordsPlaced.find(position); //it points to the position
 
-	return it->second;
+	return it->second; //return the respective word of the position asked
+}
+
+bool Board::checkPosition(string position)
+{
+	map<string, string>::iterator it = positionWordsPlacedGrid.find(position); //iterator pointing to the position
+	if (it != positionWordsPlacedGrid.end()) //if it is not in the end, the position exists
+	{
+		return true;
+	}
+
+	else return false;
 }
