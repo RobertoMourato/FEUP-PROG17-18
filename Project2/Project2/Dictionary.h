@@ -6,7 +6,11 @@
 #include <map>
 #include <algorithm>
 #include <Windows.h> 
+#include <ctime>
+#include <stdlib.h>
 using namespace std;
+
+
 
 class Dictionary
 {
@@ -33,5 +37,7 @@ public:
 	bool headlineExists(string word);
 
 	vector<string> matchingWords(string wildCard);
+
+	string synonymsWord(string word);
 };
 

@@ -18,6 +18,7 @@ private:
 	vector <vector <char> > layout; //bigger vector "lines", smaller vectors are columns
 	vector <char> newEmpty; //needed to fill the vector
 	map <string, string> positionWordsPlaced; //to handle add and remove words, check on repeated words and output/input for/from files
+	map <string, string> positionWordsPlacedGrid; //handle the cwplayer grid
 	
 public:
 	~Board();
@@ -80,11 +81,25 @@ public:
 
 	void loadFromFileGrid(fstream *f);
 
-	void addWordGrid(string word, string position);
+	void addWord1stGrid(string word, string position);
 
-	bool unusedWordGrid(string word, vector<string> wordsplaced);
+	bool unusedWordGrid(string word);
 
 	bool checkSpace4WordGrid(string word, string position);
 
 	void clues();
+
+	void addWordGrid(string word, string position);
+
+	void removeWordGrid(string position);
+
+	void removeVerticalGrid(int line, int column);
+
+	void removeHorizontalGrid(int line, int column);
+
+	bool finishedGrid();
+
+	map<string, string> positionWords();
+
+	string wordInPosition(string position);
 };

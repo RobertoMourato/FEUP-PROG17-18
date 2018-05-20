@@ -1,6 +1,5 @@
 #include "Dictionary.h"
 
-
 Dictionary::Dictionary()
 {
 }
@@ -199,4 +198,13 @@ vector<string> Dictionary::matchingWords(string wildCard)
 		}
 	}
 	return resultWord;
+}
+
+string Dictionary::synonymsWord(string word)
+{
+	map<string, vector<string> >::iterator it = wordSynonyms.find(word);
+	vector<string> synonyms = it->second;
+
+	string synonym = synonyms[rand() % synonyms.size()];
+	return synonym;
 }
