@@ -1,0 +1,31 @@
+dic_en.txt
+
+I # # # # # # # # # # # # # # 
+N # # # # C # # # # # # A R T 
+C # # B L E A C H # # # # # # 
+O # # # # N # # # # # A B L E 
+M A K E # T # # # # # # # # # 
+P # # # # R # # # # # # # # # 
+A # # # # A B O V E # I L L # 
+S # # # # L # # E # # # # # # 
+S # # # # # # # S # # # # # # 
+I N T R O D U C T I O N # # # 
+O # # E # # # # # # # A # # # 
+N # # S # # # # # # # S # # # 
+A P A C E # # # # # # T # # # 
+T # # U # # # # # # # Y # # # 
+E # # E # # # # # # # # # # # 
+
+Aav INCOMPASSIONATE
+Bfv CENTRAL
+Bmh ART
+Cdh BLEACH
+Dlh ABLE
+Eah MAKE
+Gfh ABOVE
+Giv VEST
+Glh ILL
+Jah INTRODUCTION
+Jdv RESCUE
+Jlv NASTY
+Mah APACE

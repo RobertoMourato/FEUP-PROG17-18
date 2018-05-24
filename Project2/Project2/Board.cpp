@@ -472,7 +472,7 @@ vector<string> Board::verifyVertical()
 
 void Board::extraction(string dictFile)
 {
-	int n = -1;
+	int n = 0;
 	string fileOutput, docType;
 	bool existingFile;
 	fstream f;
